@@ -594,7 +594,7 @@ ggplot(janp_richness, aes(x = sky, y = richness)) +
 
 ## Vegetation variables
 
-We used the existing Vegetation Resource Inventory (VRI, @techreport) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (@tbl-hab-var). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects as simply "Burned" for the 2025 data. This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.
+We used the existing Vegetation Resource Inventory (VRI, @GovernmentOfAlberta2022) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (@tbl-hab-var). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects as simply "Burned" for the 2025 data. This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.
 
 ```{r Habitat variables}
 #| warning: false
@@ -1942,26 +1942,29 @@ plot_trend_coef <- function(species) {
           ylab(expression("Detection-corrected abundance ("*hat(lambda)*")")) + 
           xlab("Year")
 
-  p2 <- ggplot(coefz_long |> filter(species_code == species), aes(x = term, y = estimate, shape = ecoregion, colour = ecoregion)) +
-        scale_colour_viridis_d(option = "cividis") +
-        geom_hline(yintercept = 0, linetype = "dashed") +
-        geom_errorbar(aes(ymin = conf.low, ymax = conf.high), position = position_dodge(width = 0.8), width = 0.2) +
-        geom_point(position = position_dodge(width = 0.8)) +
-        geom_text(aes(label = alpha_sig, y = conf.high),  # anchor to error bar tip
-          position = position_dodge(width = 0.8),
-          hjust = -0.2,
-          vjust = 0.5,
-          size = 5,
-          colour = "black",          # override inherited colour
-          na.rm = TRUE,
-          inherit.aes = TRUE) +
-        coord_flip() +
-        facet_wrap(~component, scales = "free_y") +
-        labs(x = NULL, y = "Coefficient (β)", title = "Distribution of coefficients across species by ecoregion") +
-        theme_bw() +
-        theme(axis.text.y = element_text(size = 8),
-              strip.text = element_text(size = 8),
-              plot.title = element_text(size = 12, face = "bold"))
+  p2 <- coefz_long |> 
+  filter(species_code == species) |>
+  mutate(significant = ifelse(alpha_sig == "*", ecoregion, NA_character_)) |>
+  ggplot(aes(x = term, y = estimate, colour = ecoregion)) +
+  scale_colour_viridis_d(option = "cividis") +
+  scale_fill_manual(values = c(Alpine = "#00204D", Forested = "#FFEA46"), na.value = "white") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                position = position_dodge(width = 0.8), width = 0.2) +
+  geom_point(aes(fill = significant),
+             position = position_dodge(width = 0.8),
+             shape = 21, size = 2.5, stroke = 0.8) +
+  coord_flip() +
+  facet_wrap(~component, scales = "free_y") +
+  labs(x = NULL, y = "Coefficient (β)",
+       title = "Distribution of coefficients across species by ecoregion") +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y     = element_text(size = 8),
+    strip.text      = element_text(size = 8),
+    plot.title      = element_text(size = 12, face = "bold")
+  )
 
 return(p1 / p2)
 
@@ -1977,7 +1980,7 @@ return(p1 / p2)
 #| results: asis
 #| eval: true
 #| label: fig-trend-points
-#| tbl-cap: Summary of trend of species by ecoregion with coefficients for top 5 detected species.
+#| tbl-cap: Summary of trend of species by ecoregion with coefficients for top 5 detected species. Coefficient plots show the 95% CI and significance of each covariate by ecoregion.
 #| fig-width: 12
 #| fig-height: 10
 
