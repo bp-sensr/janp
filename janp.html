@@ -264,8 +264,9 @@ Note
 <ul>
 <li>Acoustic recordings from 2007–2025 in Jasper National Park were analyzed to assess bird abundance trends relative to a ±2.5% annual change threshold as part of the Park’s ecological integrity monitoring program.</li>
 <li>A single-visit N-mixture abundance model was applied to 31 alpine and 67 forested species, accounting for detection and observation covariates in each ecoregion.</li>
-<li>Long-distance migrants showed the strongest declines (14% alpine, 59% forested), followed by winter residents (19% alpine, 44% forested), while short-distance migrants were comparatively stable (14% alpine, 17% forested).</li>
+<li>Using the aforementioned threshold, long-distance migrants showed the strongest declines (14% alpine, 59% forested), followed by winter residents (19% alpine, 44% forested), while short-distance migrants were comparatively stable (14% alpine, 17% forested).</li>
 <li>Declines were most pronounced among invertebrate feeders (8% alpine, 42% forested) and plant/seed feeders (40% alpine, 33% forested), whereas omnivores were least affected (8% alpine, 25% forested).</li>
+<li>By habitat guild, grassland-shrubland-alpine species showed the steepest declines (43% alpine, 57% forested), followed by habitat generalists (0% alpine, 57% forested) and forest generalists (18% alpine, 32% forested); late succession forest (11% alpine, 37% forested) and wetland species (0% alpine, 17% forested) showed comparatively fewer declines.</li>
 <li>At finer dietary resolution, aerial insectivores exhibited the steepest declines (0% alpine, 67% forested), with additional losses among granivore-herbivores (56% alpine, 44% forested) and aquatic foragers (0% alpine, 25% forested).</li>
 </ul>
 </section>
@@ -365,7 +366,7 @@ Table&nbsp;1: Locations surveyed across years. Ones indicated a deployment in th
 </section>
 <section id="vegetation-variables" class="level2">
 <h2 class="anchored" data-anchor-id="vegetation-variables">Vegetation variables</h2>
-<p>We used the existing Vegetation Resource Inventory (VRI, <span class="citation" data-cites="techreport">(<a href="#ref-techreport" role="doc-biblioref"><strong>techreport?</strong></a>)</span>) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (<a href="#tbl-hab-var" class="quarto-xref">Table&nbsp;2</a>). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects as simply “Burned” for the 2025 data. This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.</p>
+<p>We used the existing Vegetation Resource Inventory (VRI, <span class="citation" data-cites="GovernmentOfAlberta2022">Government of Alberta (<a href="#ref-GovernmentOfAlberta2022" role="doc-biblioref">2022</a>)</span>) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (<a href="#tbl-hab-var" class="quarto-xref">Table&nbsp;2</a>). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects as simply “Burned” for the 2025 data. This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -494,6 +495,12 @@ Note
 <li>Modeled temporal changes in functional and community-level diversity; and</li>
 <li>Quantified long-term abundance trends (2007–2025), accounting for detection probability and addressing spatial autocorrelation.</li>
 </ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./assets/JasperConceptualModel.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Conceptual model of analytical framework"><img src="./assets/JasperConceptualModel.png" class="img-fluid figure-img" alt="Conceptual model of analytical framework"></a></p>
+<figcaption>Conceptual model of analytical framework</figcaption>
+</figure>
+</div>
 <section id="sec-independent-locations" class="level3">
 <h3 class="anchored" data-anchor-id="sec-independent-locations">Location correlation</h3>
 <p>To inform our subsequent modeling choices, we first evaluated the bird survey data for spatial autocorrelation, in other words, whether survey points close to one another exhibit similar bird counts. To test for this, we calculated a total abundance index for each location and year by summing the maximum number of individuals detected, representing the minimum number of individuals known to be present. Because survey points were typically spaced 300 m apart, we defined spatial neighbor relationships using a 1-nearest-neighbor approach (<em>k</em> = 1) based on great-circle distances. We derived spatial coordinates from geographic point data, excluding non-finite values to ensure valid estimation. Using the <code>spdep</code> R package (<span class="citation" data-cites="spdeppackage">R. Bivand and Wong (<a href="#ref-spdeppackage" role="doc-biblioref">2018</a>)</span>), we constructed a spatial weights matrix with row-standardized weights to reflect immediate adjacency between points. We assessed global spatial autocorrelation in total abundance using Moran’s <em>I</em> (<span class="citation" data-cites="bivand2018comparing">R. S. Bivand and Wong (<a href="#ref-bivand2018comparing" role="doc-biblioref">2018</a>)</span>) under a randomization assumption. This statistic evaluates whether the landscape is spatially structured—specifically, whether nearby locations tend to have similar abundance values more often than expected by chance. To determine if this dependence was driven by localized clustering, we further calculated Local Indicators of Spatial Association (LISA) using local Moran’s <em>I</em> (<span class="citation" data-cites="anselin1995local">Anselin (<a href="#ref-anselin1995local" role="doc-biblioref">1995</a>)</span>) which allowed for the identification of potential high–high, low–low, and spatial outlier patterns, with statistical significance evaluated at <em>α</em> = 0.05. While global Moran’s <em>I</em> indicated significant positive spatial autocorrelation across the study area, local Moran’s <em>I</em> revealed no statistically significant clusters. This pattern suggests that similarities in bird counts among nearby survey locations were spread broadly rather than concentrated in distinct hotspots, consistent with spatial dependence arising from gradual, landscape‑scale ecological processes rather than localized aggregations. Therefore, we proceeded by treating the locations as spatially independent.</p>
@@ -501,7 +508,7 @@ Note
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="janp_files/figure-html/Function%20to%20run%20spatial%20independence%20test-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="janp_files/figure-html/Function%20to%20run%20spatial%20independence%20test-1.png" class="img-fluid figure-img" width="672"></a></p>
+<p><a href="janp_files/figure-html/Function%20to%20run%20spatial%20independence%20test-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="janp_files/figure-html/Function%20to%20run%20spatial%20independence%20test-1.png" class="img-fluid figure-img" width="672"></a></p>
 </figure>
 </div>
 </div>
@@ -613,7 +620,7 @@ Note
 <div id="fig-control-transect" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-control-transect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-control-transect-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;4: Distances to the montane centroid are similar (distributions overlap strongly) between the control and the montane reference groups."><img src="janp_files/figure-html/fig-control-transect-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-control-transect-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;4: Distances to the montane centroid are similar (distributions overlap strongly) between the control and the montane reference groups."><img src="janp_files/figure-html/fig-control-transect-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-control-transect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Distances to the montane centroid are similar (distributions overlap strongly) between the control and the montane reference groups.
@@ -631,7 +638,7 @@ Figure&nbsp;4: Distances to the montane centroid are similar (distributions over
 <div id="fig-pairwise" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pairwise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-pairwise-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;5: Heatmap of Pearson’s correlation coefficients (r) comparing species detections and abundance estimates among observers processing the same recordings. Positive values indicate agreement, while negative values indicate divergence in species identification and abundance estimates."><img src="janp_files/figure-html/fig-pairwise-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-pairwise-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;5: Heatmap of Pearson’s correlation coefficients (r) comparing species detections and abundance estimates among observers processing the same recordings. Positive values indicate agreement, while negative values indicate divergence in species identification and abundance estimates."><img src="janp_files/figure-html/fig-pairwise-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pairwise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5: Heatmap of Pearson’s correlation coefficients (r) comparing species detections and abundance estimates among observers processing the same recordings. Positive values indicate agreement, while negative values indicate divergence in species identification and abundance estimates.
@@ -649,7 +656,7 @@ Figure&nbsp;5: Heatmap of Pearson’s correlation coefficients (r) comparing spe
 <div id="fig-community" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-community-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-community-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;6: Community matrix of species associations between forested and alpine ecoregions"><img src="janp_files/figure-html/fig-community-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-community-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;6: Community matrix of species associations between forested and alpine ecoregions"><img src="janp_files/figure-html/fig-community-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-community-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6: Community matrix of species associations between forested and alpine ecoregions
@@ -667,7 +674,7 @@ Figure&nbsp;6: Community matrix of species associations between forested and alp
 <div id="fig-raos-q" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-raos-q-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-raos-q-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;7: Mean functional diversity (Rao’s Q) over time"><img src="janp_files/figure-html/fig-raos-q-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-raos-q-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;7: Mean functional diversity (Rao’s Q) over time"><img src="janp_files/figure-html/fig-raos-q-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-raos-q-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7: Mean functional diversity (Rao’s Q) over time
@@ -678,10 +685,10 @@ Figure&nbsp;7: Mean functional diversity (Rao’s Q) over time
 </div>
 <div class="cell" data-layout-align="center" data-cap-location="bottom">
 <div class="cell-output-display">
-<div id="fig-spp-rich-locs" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" data-cap-location="bottom">
+<div id="fig-spp-rich-locs" class="quarto-float quarto-figure quarto-figure-center anchored" data-cap-location="bottom" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-spp-rich-locs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-spp-rich-locs-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;8: Species richness by year. Data from 2012 were excluded for montane sites because those sites were not sampled that year."><img src="janp_files/figure-html/fig-spp-rich-locs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-spp-rich-locs-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Figure&nbsp;8: Species richness by year. Data from 2012 were excluded for montane sites because those sites were not sampled that year."><img src="janp_files/figure-html/fig-spp-rich-locs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spp-rich-locs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8: Species richness by year. Data from 2012 were excluded for montane sites because those sites were not sampled that year.
@@ -692,10 +699,10 @@ Figure&nbsp;8: Species richness by year. Data from 2012 were excluded for montan
 </div>
 <div class="cell" data-layout-align="center" data-cap-location="bottom">
 <div class="cell-output-display">
-<div id="fig-shannon" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" data-cap-location="bottom">
+<div id="fig-shannon" class="quarto-float quarto-figure quarto-figure-center anchored" data-cap-location="bottom" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-shannon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-shannon-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Figure&nbsp;9: Shannon diversity index across years. Data from 2012 were excluded for forested sites because those sites were not sampled that year."><img src="janp_files/figure-html/fig-shannon-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-shannon-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Figure&nbsp;9: Shannon diversity index across years. Data from 2012 were excluded for forested sites because those sites were not sampled that year."><img src="janp_files/figure-html/fig-shannon-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shannon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;9: Shannon diversity index across years. Data from 2012 were excluded for forested sites because those sites were not sampled that year.
@@ -713,7 +720,7 @@ Figure&nbsp;9: Shannon diversity index across years. Data from 2012 were exclude
 <div id="fig-after-fire" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-after-fire-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-after-fire-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Figure&nbsp;10: Community matrix of species associations before and after the Jasper 2024 fire on the VALLEY5 and TEKARRA transects. Movement along RDA1 reflects the direction and magnitude of fire-related change in species composition. PC1 captures residual variation in species composition that is not explained by fire period reflecting the background ecological variability among sites."><img src="janp_files/figure-html/fig-after-fire-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-after-fire-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;10: Community matrix of species associations before and after the Jasper 2024 fire on the VALLEY5 and TEKARRA transects. Movement along RDA1 reflects the direction and magnitude of fire-related change in species composition. PC1 captures residual variation in species composition that is not explained by fire period reflecting the background ecological variability among sites."><img src="janp_files/figure-html/fig-after-fire-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-after-fire-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10: Community matrix of species associations before and after the Jasper 2024 fire on the VALLEY5 and TEKARRA transects. Movement along RDA1 reflects the direction and magnitude of fire-related change in species composition. PC1 captures residual variation in species composition that is not explained by fire period reflecting the background ecological variability among sites.
@@ -743,7 +750,7 @@ Table&nbsp;5: Summary of trend of species by ecoregion. SOCB stands for ‘Statu
 </figure>
 </div>
 </div>
-<div class="cell" data-inclde="true" data-tbl-cap="Summary of trend of species by ecoregion with coefficients for top 5 detected species.">
+<div class="cell" data-inclde="true" data-tbl-cap="Summary of trend of species by ecoregion with coefficients for top 5 detected species. Coefficient plots show the 95% CI and significance of each covariate by ecoregion.">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">YRWA</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">CHSP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">PISI</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">SWTH</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">AMRO</a></li></ul>
 <div class="tab-content">
@@ -771,7 +778,7 @@ Table&nbsp;5: Summary of trend of species by ecoregion. SOCB stands for ‘Statu
 <div id="fig-trend-vert" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-vert-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;11: Percent change in occupancy trend per species and ecoregion across the full study period. Colours indicate whether the trend represents an increase (>+2.5%), stable (−2.5% to +2.5%), or decrease (<−2.5%) relative to baseline."><img src="janp_files/figure-html/fig-trend-vert-1.png" class="img-fluid figure-img" width="768"></a>
+<a href="janp_files/figure-html/fig-trend-vert-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;11: Percent change in occupancy trend per species and ecoregion across the full study period. Colours indicate whether the trend represents an increase (>+2.5%), stable (−2.5% to +2.5%), or decrease (<−2.5%) relative to baseline."><img src="janp_files/figure-html/fig-trend-vert-1.png" class="img-fluid figure-img" width="768"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11: Percent change in occupancy trend per species and ecoregion across the full study period. Colours indicate whether the trend represents an increase (&gt;+2.5%), stable (−2.5% to +2.5%), or decrease (&lt;−2.5%) relative to baseline.
@@ -789,7 +796,7 @@ Figure&nbsp;11: Percent change in occupancy trend per species and ecoregion acro
 <div id="fig-trend-guilds-mig" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-guilds-mig-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-guilds-mig-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;12: Summary of trend of migratory guilds"><img src="janp_files/figure-html/fig-trend-guilds-mig-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-trend-guilds-mig-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Figure&nbsp;12: Summary of trend of migratory guilds"><img src="janp_files/figure-html/fig-trend-guilds-mig-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-guilds-mig-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12: Summary of trend of migratory guilds
@@ -818,7 +825,7 @@ Table&nbsp;6: Summary of trend of species grouped by migratory guild and ecoregi
 <div id="fig-trend-guilds-hab" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-guilds-hab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-guilds-hab-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Figure&nbsp;13: Summary of trend of habitat guilds"><img src="janp_files/figure-html/fig-trend-guilds-hab-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-trend-guilds-hab-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Figure&nbsp;13: Summary of trend of habitat guilds"><img src="janp_files/figure-html/fig-trend-guilds-hab-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-guilds-hab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13: Summary of trend of habitat guilds
@@ -847,7 +854,7 @@ Table&nbsp;7: Summary of trend of species grouped by habitat guild and ecoregion
 <div id="fig-trend-guilds-feeding" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-guilds-feeding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-guilds-feeding-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Figure&nbsp;14: Summary of trend of feeding guilds"><img src="janp_files/figure-html/fig-trend-guilds-feeding-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-trend-guilds-feeding-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Figure&nbsp;14: Summary of trend of feeding guilds"><img src="janp_files/figure-html/fig-trend-guilds-feeding-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-guilds-feeding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14: Summary of trend of feeding guilds
@@ -876,7 +883,7 @@ Table&nbsp;8: Summary of trend of species grouped by dietary guild and ecoregion
 <div id="fig-trend-guilds-trait" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-guilds-trait-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-guilds-trait-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Figure&nbsp;15: Summary of trend of feeding guilds"><img src="janp_files/figure-html/fig-trend-guilds-trait-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-trend-guilds-trait-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;15: Summary of trend of feeding guilds"><img src="janp_files/figure-html/fig-trend-guilds-trait-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-guilds-trait-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;15: Summary of trend of feeding guilds
@@ -909,7 +916,7 @@ Table&nbsp;9: Summary of trend of species grouped by trait guild and ecoregion
 <div id="fig-trend-climate" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-climate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="janp_files/figure-html/fig-trend-climate-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;16: Scaled relationship of abundance estimates with average spring temperature over a 3-year moving window."><img src="janp_files/figure-html/fig-trend-climate-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="janp_files/figure-html/fig-trend-climate-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;16: Scaled relationship of abundance estimates with average spring temperature over a 3-year moving window."><img src="janp_files/figure-html/fig-trend-climate-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-climate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;16: Scaled relationship of abundance estimates with average spring temperature over a 3-year moving window.
