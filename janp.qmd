@@ -192,7 +192,7 @@ janp_main <- bind_rows(old_s_max, janp_aru) |>
          sky = if_else(is.na(sky), sk, sky),
          wind = if_else(is.na(wind), wi, wind))
 
-``` 
+```
 
 ::: {.callout-note collapse="true" style="background-color: #f4f4f4; padding: 20px;"}
 This report is dynamically generated, meaning its results may evolve with the addition of new data or further analyses. For the most recent updates, refer to the publication date and feel free to reach out to the authors.
@@ -221,12 +221,12 @@ pct_dec_val <- function(data, group_var, guild_val, ecoregion) {
 
 # Project Highlights
 
-* Acoustic recordings from `r paste0(min(janp_main$year),"–",max(janp_main$year))` in Jasper National Park were analyzed to assess bird abundance trends relative to a ±2.5% annual change threshold as part of the Park's ecological integrity monitoring program.
-* A single-visit N-mixture abundance model was applied to `r coefz_long |> filter(ecoregion == "Alpine") |> distinct(species_code) |> nrow()` alpine and `r coefz_long |> filter(ecoregion == "Forested") |> distinct(species_code) |> nrow()` forested species, accounting for detection and observation covariates in each ecoregion.
-* Using the aforementioned threshold, long-distance migrants showed the strongest declines (`r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Forested")`% forested), followed by winter residents (`r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Forested")`% forested), while short-distance migrants were comparatively stable (`r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Forested")`% forested).
-* Declines were most pronounced among invertebrate feeders (`r pct_dec_val(trend_guild, trait, "Invertebrate", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Invertebrate", "Forested")`% forested) and plant/seed feeders (`r pct_dec_val(trend_guild, trait, "PlantSeed", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "PlantSeed", "Forested")`% forested), whereas omnivores were least affected (`r pct_dec_val(trend_guild, trait, "Omnivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Omnivore", "Forested")`% forested).
-* By habitat guild, grassland-shrubland-alpine species showed the steepest declines (`r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Forested")`% forested), followed by habitat generalists (`r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Forested")`% forested) and forest generalists (`r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Forested")`% forested); late succession forest (`r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Forested")`% forested) and wetland species (`r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Forested")`% forested) showed comparatively fewer declines.
-* At finer dietary resolution, aerial insectivores exhibited the steepest declines (`r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Forested")`% forested), with additional losses among granivore-herbivores (`r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Forested")`% forested) and aquatic foragers (`r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Forested")`% forested).
+-   Acoustic recordings from `r paste0(min(janp_main$year),"–",max(janp_main$year))` in Jasper National Park were analyzed to assess bird abundance trends relative to a ±2.5% annual change threshold as part of the Park's ecological integrity monitoring program.
+-   A single-visit N-mixture abundance model was applied to `r coefz_long |> filter(ecoregion == "Alpine") |> distinct(species_code) |> nrow()` alpine and `r coefz_long |> filter(ecoregion == "Forested") |> distinct(species_code) |> nrow()` forested species, accounting for detection and observation covariates in each ecoregion.
+-   Using the aforementioned threshold, long-distance migrants showed the strongest declines (`r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Forested")`% forested), followed by winter residents (`r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Forested")`% forested), while short-distance migrants were comparatively stable (`r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Forested")`% forested).
+-   Declines were most pronounced among invertebrate feeders (`r pct_dec_val(trend_guild, trait, "Invertebrate", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Invertebrate", "Forested")`% forested) and plant/seed feeders (`r pct_dec_val(trend_guild, trait, "PlantSeed", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "PlantSeed", "Forested")`% forested), whereas omnivores were least affected (`r pct_dec_val(trend_guild, trait, "Omnivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Omnivore", "Forested")`% forested).
+-   By habitat guild, grassland-shrubland-alpine species showed the steepest declines (`r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Forested")`% forested), followed by habitat generalists (`r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Forested")`% forested) and forest generalists (`r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Forested")`% forested); late succession forest (`r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Forested")`% forested) and wetland species (`r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Forested")`% forested) showed comparatively fewer declines.
+-   At finer dietary resolution, aerial insectivores exhibited the steepest declines (`r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Forested")`% forested), with additional losses among granivore-herbivores (`r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Forested")`% forested) and aquatic foragers (`r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Forested")`% forested).
 
 # Land Acknowledgement
 
@@ -238,29 +238,29 @@ Human activities are among the primary drivers of global forest wildlife decline
 
 In 2007, Jasper National Park established a long-term passive acoustic monitoring program to address a central question: has the abundance of forest and alpine birds declined over the duration of monitoring and during the past ten years? The program uses Autonomous Recording Units (ARUs), compact environmental sensors that passively capture vocalizing wildlife such as birds and amphibians (@aru-overview), a method growing rapidly in global use (@lots-of-pam). By enabling prolonged surveys with minimal human interference while producing a permanent, archiveable record of the soundscape, ARU-based monitoring is well suited to tracking ecological change at the scale of a national park.
 
-Incidence-based metrics treat a single detection the same as a commonly observed species, obscuring ecologically meaningful differences in population status. Abundance fluctuates more than occurrence and is more directly linked to extinction risk, making it better suited for diagnosing decline and recovery and for capturing the resilience of biodiversity to ongoing environmental pressures. A species-specific decline threshold of 2.5% per year (approximately 20% over ten years) was applied throughout, consistent with the IUCN Vulnerable listing criteria and the Partners in Flight Conservation Urgency benchmark, under which species projected to lose 50% of their population within 30 years (~2.3% per year) are considered high urgency (@rosenberg2019decline).
+Incidence-based metrics treat a single detection the same as a commonly observed species, obscuring ecologically meaningful differences in population status. Abundance fluctuates more than occurrence and is more directly linked to extinction risk, making it better suited for diagnosing decline and recovery and for capturing the resilience of biodiversity to ongoing environmental pressures. A species-specific decline threshold of 2.5% per year (approximately 20% over ten years) was applied throughout, consistent with the IUCN Vulnerable listing criteria and the Partners in Flight Conservation Urgency benchmark, under which species projected to lose 50% of their population within 30 years (\~2.3% per year) are considered high urgency (@rosenberg2019decline).
 
 This report analyzes Jasper's passive acoustic bird monitoring data from 2007 to 2025. Because birds serve as ecological indicators in both the forest and alpine ecosystems reported in Jasper's State of the Park Report, separate analyses were conducted for the forested ecoregion (encompassing the montane, lower subalpine, and upper subalpine ecoregions) and the alpine ecoregion. To enhance accessibility and reproducibility, findings are presented in this online report with fully documented code, supporting future updates as data collection methods become further standardized. Recommendations are also provided to refine transcription priorities, improve annual reporting workflows, and evaluate species guild classifications for long-term monitoring.
 
 The objectives of this report are to:
 
-* Describe the data management and processing procedures for acoustic data collected from 2007 to 2025.
-* Compare how different data processing methods influence the count of species and individuals detected on recordings.
-* Report on trends in bird abundance by species and by guild in the forest and alpine ecoregions, incorporating time-to-first-detection analysis.
-  * Summarize results by ecoregion as the percentage of species and guilds declining by ≥2.5% in both forest and alpine regions.
-  * Explore methods (e.g., inclusion of covariates and summarizing by guild) to interpret these changes, understanding how birds may be responding to stressors in the park or across their ranges and how changing populations may affect ecosystems. 
-  * Estimate species richness and diversity trends to determine if they provide insight about bird community conditions.
-* Provide recommendations for: 
-  * Prioritizing previous years’ data for re-transcription to 1SPT; 
-  * Optimizing annual reporting methods (e.g., baseline comparisons vs. 10-year trends); and 
-  * Refining methods for evaluating species trends against thresholds and reviewing guilds and traits used in assessments.
-  * Facilitate data publication to the public, resource managers, academic institutions, and any other relevant agencies.
+-   Describe the data management and processing procedures for acoustic data collected from 2007 to 2025.
+-   Compare how different data processing methods influence the count of species and individuals detected on recordings.
+-   Report on trends in bird abundance by species and by guild in the forest and alpine ecoregions, incorporating time-to-first-detection analysis.
+    -   Summarize results by ecoregion as the percentage of species and guilds declining by ≥2.5% in both forest and alpine regions.
+    -   Explore methods (e.g., inclusion of covariates and summarizing by guild) to interpret these changes, understanding how birds may be responding to stressors in the park or across their ranges and how changing populations may affect ecosystems.
+    -   Estimate species richness and diversity trends to determine if they provide insight about bird community conditions.
+-   Provide recommendations for:
+    -   Prioritizing previous years’ data for re-transcription to 1SPT;
+    -   Optimizing annual reporting methods (e.g., baseline comparisons vs. 10-year trends); and
+    -   Refining methods for evaluating species trends against thresholds and reviewing guilds and traits used in assessments.
+    -   Facilitate data publication to the public, resource managers, academic institutions, and any other relevant agencies.
 
 # Methods
 
 ## Bird surveys
 
-Monitoring for forest and alpine birds in Jasper National Park has been conducted annually since 2007 across a core set of 129 sites, with 20 sites that were added in 2025 after the Jasper 2024 fire (see @sec-jasper-fire). To ensure long-term feasibility, sites were clustered along transects, and transects were randomly selected from hiking trails that were at least 500 m away from roads and were at least five kilometers apart. To sample the diversity of birds in the park, transects were stratified by ecological region. Songbird data were collected using autonomous recording units (ARUs; @aru-overview) deployed by field staff to capture one 10-minute recording per point count annually. Surveys were scheduled consistently each breeding season in June and early July, starting 30 minutes before sunrise. Technicians walked transects containing nine or ten points, each spaced at least 300 m apart to prevent duplicate detections and ensure independence of locations (but see @sec-independent-locations). At each location, the ARU was set up, and technicians moved 10–20 m away to minimize disturbance, allowing at least 11 minutes of recording to capture voice notes and the standardized 10-minute survey period. Five covariates thought to influence detection or abundance were recorded: start time, wind speed (km/h), temperature (°C), cloud cover (overcast, broken, scattered, clear) and recording equipment. Recording equipment varied throughout the course of the study. During the 2021 and 2022 field seasons, paired recordings were collected concurrently at each site using both Wildlife Acoustics SM4 autonomous recording units and the original recording devices (Riverforks CZM or Zoom H2N Pro, depending on site-specific deployment). This dual-recording approach was implemented to support calibration and continuity across equipment types. However, to maintain consistency in data processing, only recordings from the original devices were transcribed and included in the final analyses for those years. Beginning in 2023, recordings were collected exclusively using SM4 units. 
+Monitoring for forest and alpine birds in Jasper National Park has been conducted annually since 2007 across a core set of 129 sites, with 20 sites that were added in 2025 after the Jasper 2024 fire (see @sec-jasper-fire). To ensure long-term feasibility, sites were clustered along transects, and transects were randomly selected from hiking trails that were at least 500 m away from roads and were at least five kilometers apart. To sample the diversity of birds in the park, transects were stratified by ecological region. Songbird data were collected using autonomous recording units (ARUs; @aru-overview) deployed by field staff to capture one 10-minute recording per point count annually. Surveys were scheduled consistently each breeding season in June and early July, starting 30 minutes before sunrise. Technicians walked transects containing nine or ten points, each spaced at least 300 m apart to prevent duplicate detections and ensure independence of locations (but see @sec-independent-locations). At each location, the ARU was set up, and technicians moved 10–20 m away to minimize disturbance, allowing at least 11 minutes of recording to capture voice notes and the standardized 10-minute survey period. Five covariates thought to influence detection or abundance were recorded: start time, wind speed (km/h), temperature (°C), cloud cover (overcast, broken, scattered, clear) and recording equipment. Recording equipment varied throughout the course of the study. During the 2021 and 2022 field seasons, paired recordings were collected concurrently at each site using both Wildlife Acoustics SM4 autonomous recording units and the original recording devices (Riverforks CZM or Zoom H2N Pro, depending on site-specific deployment). This dual-recording approach was implemented to support calibration and continuity across equipment types. However, to maintain consistency in data processing, only recordings from the original devices were transcribed and included in the final analyses for those years. Beginning in 2023, recordings were collected exclusively using SM4 units.
 
 ::: {.callout-note collapse="true" style="background-color: #f4f4f4; padding: 20px;"}
 The 2012 field season was reduced significantly and was not included in some of the subsequent analyses. Refer to @tbl-loc-summary for more information.
@@ -496,7 +496,7 @@ datatable(janp_locs_table,
 
 ## Weather variables
 
-To examine the influence of weather on species richness and abundance, species richness and abundance were modeled separately for each ecoregion using Poisson generalized linear models with richness and abundance as responses to temperature, cloud cover, wind, Julian day, and hour of day as predictors. In the alpine ecoregion, richness increased with temperature (β = 0.008, p = 0.03) and declined with wind (β = –0.019, p < 0.001) and hour (β = –0.053, p < 0.001), with additional reductions under clear and scattered sky conditions. In contrast, richness in the forested ecoregion was dominated by a pronounced seasonal decline (Julian day: β = –0.021, p < 0.001), alongside negative effects of wind (β = –0.031, p = 0.011) and hour (β = –0.027, p < 0.001); temperature had no detectable influence. Abundance showed minimal sensitivity to environmental variation; no predictors were significant in the alpine ecoregion, while in the forested ecoregion, only hour exerted a detectable negative effect (β = –0.045, p = 0.006). Temperature and wind were retained in abundance models due to their established influence on avian activity and detection, despite weak effects observed in these exploratory analyses.
+To examine the influence of weather on species richness and abundance, species richness and abundance were modeled separately for each ecoregion using Poisson generalized linear models with richness and abundance as responses to temperature, cloud cover, wind, Julian day, and hour of day as predictors. In the alpine ecoregion, richness increased with temperature (β = 0.008, p = 0.03) and declined with wind (β = –0.019, p \< 0.001) and hour (β = –0.053, p \< 0.001), with additional reductions under clear and scattered sky conditions. In contrast, richness in the forested ecoregion was dominated by a pronounced seasonal decline (Julian day: β = –0.021, p \< 0.001), alongside negative effects of wind (β = –0.031, p = 0.011) and hour (β = –0.027, p \< 0.001); temperature had no detectable influence. Abundance showed minimal sensitivity to environmental variation; no predictors were significant in the alpine ecoregion, while in the forested ecoregion, only hour exerted a detectable negative effect (β = –0.045, p = 0.006). Temperature and wind were retained in abundance models due to their established influence on avian activity and detection, despite weak effects observed in these exploratory analyses.
 
 ```{r Relationship of weather variables with species abundance}
 #| warning: false
@@ -702,8 +702,7 @@ tmtt_tags <- janp_main |>
 
 ```
 
-![Visit photos at CAVELL-3](assets/locationphotos.png){#fig-visitphotos .float-left .fig-align-center}
-Simultaneously, we evaluated the performance of two acoustic classifiers, HawkEars v.1.0.8 (@huus2025hawkears) and BirdNET v2.1 and Lite (@kahl2021birdnet), on the acoustic recordings (@fig-classifier). Across the recall range, BirdNET-Lite maintained the highest precision, with BirdNET v2.1 closely tracking but consistently lower. HawkEars v1.0.8 performed well at low recall but declined rapidly as recall increased. At low recall, all models exceeded 0.9 precision, with BirdNET-Lite marginally leading. Performance converged at intermediate recall (~0.6–0.75), where precision ranged from ~0.75–0.8. At high recall (>0.8), differences widened: BirdNET-Lite degraded most gradually, BirdNET v2.1 declined more steeply, and HawkEars showed a sharp drop in precision. Overall, BirdNET-Lite demonstrated the most favourable precision–recall tradeoff, particularly under high-recall conditions where false positives increase.
+![Visit photos at CAVELL-3](assets/locationphotos.png){#fig-visitphotos .float-left .fig-align-center} Simultaneously, we evaluated the performance of two acoustic classifiers, HawkEars v.1.0.8 (@huus2025hawkears) and BirdNET v2.1 and Lite (@kahl2021birdnet), on the acoustic recordings (@fig-classifier). Across the recall range, BirdNET-Lite maintained the highest precision, with BirdNET v2.1 closely tracking but consistently lower. HawkEars v1.0.8 performed well at low recall but declined rapidly as recall increased. At low recall, all models exceeded 0.9 precision, with BirdNET-Lite marginally leading. Performance converged at intermediate recall (\~0.6–0.75), where precision ranged from \~0.75–0.8. At high recall (\>0.8), differences widened: BirdNET-Lite degraded most gradually, BirdNET v2.1 declined more steeply, and HawkEars showed a sharp drop in precision. Overall, BirdNET-Lite demonstrated the most favourable precision–recall tradeoff, particularly under high-recall conditions where false positives increase.
 
 ```{r HawkEars and BirdNET performance}
 #| warning: false
@@ -725,7 +724,6 @@ ggplot(janp_hawkears_eval) +
   scale_colour_viridis_d(option = "cividis")
 ```
 
-
 ## Analytical methods
 
 ::: {.callout-note collapse="true" style="background-color: #f4f4f4; padding: 20px;"}
@@ -734,13 +732,12 @@ For the purpose of these analyses, abundance was defined as the count of individ
 
 Our analysis proceeded in the following steps. We:
 
-1. Assessed if the new montane sites were effective reference sites for the montane;
-2. Evaluated consistency in species identification and abundance estimates across transcription methods and observers;
-3, Selected species and grouped species by guild for trend analysis;
-4. Characterized community composition by the alpine and forest ecoregions;
-5. Examined the initial effect of the 2025 Jasper Wildfire on bird community composition;
-6. Modeled temporal changes in functional and community-level diversity; and
-7. Quantified long-term abundance trends (2007–2025), accounting for detection probability and addressing spatial autocorrelation.
+1.  Assessed if the new montane sites were effective reference sites for the montane;
+2.  Evaluated consistency in species identification and abundance estimates across transcription methods and observers; 3, Selected species and grouped species by guild for trend analysis;
+3.  Characterized community composition by the alpine and forest ecoregions;
+4.  Examined the initial effect of the 2025 Jasper Wildfire on bird community composition;
+5.  Modeled temporal changes in functional and community-level diversity; and
+6.  Quantified long-term abundance trends (2007–2025), accounting for detection probability and addressing spatial autocorrelation.
 
 ![Conceptual model of analytical framework](./assets/JasperConceptualModel.png)
 
@@ -890,12 +887,10 @@ The 2024 Jasper Wildfire severely burned two established acoustic transects (VAL
 
 To assess whether the new transects were appropriate references for montane transects, we evaluated how similar their species assemblages were to those observed at existing montane transects over the past three years (2023-2025), excluding the TEKARRA and VALLEY5 transects post-fire because these were expected to diverge substantially due to fire severity. Specifically, we compared species detections from the COTTONWOOD and MUSHROOM transects to the distribution of detections across all other montane points to quantify compositional similarity and departure from the montane baseline. Representativeness of control transects was assessed using a multivariate dispersion analysis (PERMDISP) based on Bray–Curtis dissimilarity, with distances of new transects to the montane centroid compared against the distribution of distances among established montane transects. Statistical significance of differences in dispersion was evaluated using a permutation test with 999 iterations.
 
+::: figure-grid
+![Tekarra 9 2024](assets/tekarra9-2024.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"}
 
-::: {.figure-grid}
-![Tekarra 9 2024](assets/tekarra9-2024.png){width=48%}
-![Tekarra 9 2025](assets/tekarra9-2025.png){width=48%}
-
-Tekarra 9 site photos views from 2024 (A) pre-fire, and 2025 (B) post-fire. 
+Tekarra 9 site photos views from 2024 (A) pre-fire, and 2025 (B) post-fire.
 :::
 
 ### Transcription observer comparisons
@@ -926,7 +921,7 @@ jmc <- janp_main |> mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "A
 
 The monitoring program dataset produced detections for `r jmc$n[jmc$ecoregion == "Alpine"]` alpine and `r jmc$n[jmc$ecoregion == "Montane"]` montane species. Following recommendations to prioritize species with sufficient statistical power (@prowse2021optimising), we restricted our analysis to native terrestrial bird species for which: (a) Jasper National Park is their breeding range; and (b) the total count across all point count sites exceeded 20 individuals (see @tbl-guilds). Applying these criteria resulted in a final list of `r nrow(trendzz)` focal species. This selection process retained `r round((nrow(janp_main |> filter(species_code %in% trendzz_spp)) / nrow(janp_main))*100,2)`% of all individual detections recorded by the program, ensuring that the analysis captured the vast majority of the biological signal while removing rare or vagrant species that would destabilize trend estimates.
 
-To assess trends in species’ abundances and interpret community-level ecological responses, we assigned species to guilds. Guilds are groups of species that respond in similar ways to environmental changes as a result of similar uses of the environment (@doser2021trends). Directional trends in abundant species can strongly influence the trend of the guilds of which these species are members. Given this limitation, trend analyses of ecological guilds often warrant further examination of common patterns of change among species within the guild.  For example, if we find large variation in abundance trends across an ecoregion but not across bird guilds, this may suggest a consistent effect on the entire bird community (@doser2021trends, which can determine if management should target a whole community, specific guilds or individual species. If all or many species within a guild show similar trends in relative abundance, then factors affecting the guild-related life history attributes deserve attention. @pacifici2014guidelines recommend using bird guilds in post-hoc assessment. Species were assigned to guilds using the [Birds of North America](https://birdsna.org), [Elton Traits Database](https://esajournals.onlinelibrary.wiley.com/doi/10.1890/13-1917.1) and bird guidebooks. To examine responses by different guild types we assigned birds by migratory guild (long-distance migrant, short-distance migrant, winter resident), Elton trait (e.g., invertebrate, plant/seed, omnivore), dietary guild (e.g., aerial insectivore, bark forager), and habitat guild (e.g., wetland, forest generalist, late successional forest) (@tbl-guilds).
+To assess trends in species’ abundances and interpret community-level ecological responses, we assigned species to guilds. Guilds are groups of species that respond in similar ways to environmental changes as a result of similar uses of the environment (@doser2021trends). Directional trends in abundant species can strongly influence the trend of the guilds of which these species are members. Given this limitation, trend analyses of ecological guilds often warrant further examination of common patterns of change among species within the guild. For example, if we find large variation in abundance trends across an ecoregion but not across bird guilds, this may suggest a consistent effect on the entire bird community (@doser2021trends, which can determine if management should target a whole community, specific guilds or individual species. If all or many species within a guild show similar trends in relative abundance, then factors affecting the guild-related life history attributes deserve attention. @pacifici2014guidelines recommend using bird guilds in post-hoc assessment. Species were assigned to guilds using the [Birds of North America](https://birdsna.org), [Elton Traits Database](https://esajournals.onlinelibrary.wiley.com/doi/10.1890/13-1917.1) and bird guidebooks. To examine responses by different guild types we assigned birds by migratory guild (long-distance migrant, short-distance migrant, winter resident), Elton trait (e.g., invertebrate, plant/seed, omnivore), dietary guild (e.g., aerial insectivore, bark forager), and habitat guild (e.g., wetland, forest generalist, late successional forest) (@tbl-guilds).
 
 ### Ecoregion community composition analysis
 
@@ -935,7 +930,7 @@ To characterize bird community composition, we aggregated species-level observat
 ### Functional and community-level diversity
 
 To evaluate community-level ecological responses, we examined temporal changes in three complementary diversity metrics: functional diversity, species richness, and community structure. First, we quantified functional diversity using Rao’s Q (@rao1982diversity; @laliberte2010adistance), calculated via the `dbFD()` function in the `FD` package (@FDpackage). This metric estimates the average difference in functional traits between any two random individuals in the community. We also calculated species richness (number of unique species per location per year) and Shannon’s diversity index (@shannon1948mathematical), which integrates richness and evenness to describe community structure. These metrics were modeled through time using linear, mixed-effects, and segmented regression models to detect both gradual and threshold-type changes. Results were summarized graphically by ecoregion and functional guild to highlight spatial variation in diversity trajectories.
- 
+
 ```{r Create a guild table}
 #| warning: false
 #| echo: false
@@ -1106,16 +1101,16 @@ Abundance was estimated using single-visit *N*-mixture abundance models implemen
 
 For alpine model selection, we constructed a candidate model set incorporating observation and detection covariates performed model selection ranked via BIC, which applies a stronger penalty for model complexity than AIC and is appropriate for large candidate model sets (). We also determined distribution and zero-inflation of each set of variables for the species and assigned the appropriate type to the species in the alpine ecoregion, noting zero-inflated distribution for most species. We examined the use of scaled variables for year (to detect temporal abundance trends), elevation, and previously mentioned habitat and landcover variables. Mean tree height and mean shrub height were used as structural vegetation covariates and were included as potential predictors of both abundance and detectability. Julian date, hour, detection time, data type were also included as detection covariates. Prior to model fitting, correlations between cover and height variables were assessed to evaluate collinearity. Conifer cover and mean tree height were moderately correlated (*r* = 0.38), while shrub cover and mean shrub height were essentially uncorrelated (*r* = 0.07), indicating that cover and height capture independent dimensions of habitat structure. For example, an alpine site may have high shrub cover composed of low-growing dense vegetation, or sparse but structurally tall shrubs, attributes that may be ecologically distinct and potentially relevant to different species. Model selection via BIC identified mean tree height as the primary variable influencing detection probability, with taller vegetation reducing detectability, while abundance was best explained by a combination of vegetation cover types and temporal trend. Variation inflation factors were simultaneously calculated for all landcover covariates included in the abundance submodel to assess collinearity.
 
-* **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Shrub) + β₃(Conifer) + β₄(mean_tree_height) + β₅(mean_shrub_height)
-* **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(mean_tree_height) + α₃(wind) + α₄(data_type) + α₅(detection_time)
+-   **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Shrub) + β₃(Conifer) + β₄(mean_tree_height) + β₅(mean_shrub_height)
+-   **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(mean_tree_height) + α₃(wind) + α₄(data_type) + α₅(detection_time)
 
 #### Forested model structure
 
 In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, broadleaf cover, mixedwood cover, water cover, human (urban and road surface), herbaceous cover (graminoid, mixed and forbs), and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2025 was added to models but created complexity in the models by variance inflation factor testing.
 
-* **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Conifer) + β₃(Broadleaf) + β₄(Mixedwood) + β₅(mean_tree_height) + β₆(mean_shrub_height)
-* **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(wind) + α₃(julian) + α₄(hour) + α₅(detection_time) + α₆(data_type) + α₇(mean_tree_height) + α₈(canopy_cover)
- 
+-   **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Conifer) + β₃(Broadleaf) + β₄(Mixedwood) + β₅(mean_tree_height) + β₆(mean_shrub_height)
+-   **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(wind) + α₃(julian) + α₄(hour) + α₅(detection_time) + α₆(data_type) + α₇(mean_tree_height) + α₈(canopy_cover)
+
 #### Percent change evaluation
 
 Temporal trends were quantified using the modified Mann-Kendall test (@mann1945non; @hamed2009), which includes variance correction for autocorrelation between years, and detects monotonic directional change, and Sen’s Slope (@Sen01121968), which estimates the magnitude of those trends. Both tests were implemented via the `modifiedmk` package (@hamed1998) and applied to the detection-corrected abundance estimates (λ̂). Sen’s slope provides an estimate of the median annual rate of change in the abundance index over the time series. To express this rate in a standardized and interpretable way, we converted Sen’s slope to a percent change per year by dividing the estimated slope by the mean annual abundance index across the full time series and multiplying by 100. This metric represents the average proportional change in abundance per year, relative to the long-term mean abundance of the species in that ecoregion. Positive values indicate increasing abundance, while negative values indicate declining abundance. We quantified this percent change as both an annual change in the mean abundance as well as the percentage change across the entire time period. We also quantified annual abundance trends within each ecoregion, grouped by functional guild: diet guild (frugivore, nectarivore, insectivore, omnivore, granivore, and vertebrate-fish-scavenger), habitat guild (forest generalist, habitat generalist, wetland, late-successional forest, and grassland-shrubland-alpine), and migratory guild (long-distance migrant, short-distance migrant, and winter resident).
@@ -1133,7 +1128,6 @@ Some of these analyses are still a work-in-progress. Check back soon for updates
 ## New reference site comparisons
 
 Multivariate dispersion was similar between the new reference transects (COTTONWOOD, MUSHROOM) and established montane controls (PERMDISP; *F* = 0.004, *p* = 0.956). Although control transects exhibited a slightly higher median distance to centroid (mean = 0.407), their distributions overlapped strongly with those of the new montane reference transects (mean = 0.406), indicating no evidence of increased dispersion or outliers unique to the new sites (@fig-control-transect). This suggests that the new reference transects are not compositionally distinct from existing montane transects and fall within the natural variability of montane bird communities already sampled. Consequently, the addition of these sites is unlikely to introduce systematic bias, supporting their use as valid representatives of montane bird communities for pre- and post-fire comparisons.
-
 
 ```{r Plot control and reference transect difference and analyze}
 #| warning: false
@@ -2000,7 +1994,6 @@ purrr::walk(species_list, function(sp) {
 cat(":::\n")
 ```
 
-
 ```{r Show percent change for each species}
 #| warning: false
 #| echo: false
@@ -2227,10 +2220,9 @@ datatable(trend_guild |>
 
 ```
 
-
 ### Trends with climate
 
-Correlations between mean annual temperature and abundance were weak and not statistically significant across all migratory guilds and ecoregions (@fig-trend-climate, |r| ≤ 0.41, p > 0.05). In alpine systems, winter residents showed the strongest negative association (r = -0.41, p = 0.093), while short-distance migrants exhibited a weaker negative trend (r = -0.17, p = 0.499). Long-distance migrants showed little relationship with temperature (r = 0.08, p = 0.744). In forested systems, all guilds exhibited negative correlations, with the strongest observed in long-distance migrants (r = -0.39, p = 0.123), followed by short-distance migrants (r = -0.31, p = 0.235) and winter residents (r = -0.27, p = 0.293). Overall, these results indicate no statistically supported relationship between temperature and abundance, although the predominance of negative correlations suggests a consistent but weak tendency for abundance to decline with increasing temperature across guilds.
+Correlations between mean annual temperature and abundance were weak and not statistically significant across all migratory guilds and ecoregions (@fig-trend-climate, \|r\| ≤ 0.41, p \> 0.05). In alpine systems, winter residents showed the strongest negative association (r = -0.41, p = 0.093), while short-distance migrants exhibited a weaker negative trend (r = -0.17, p = 0.499). Long-distance migrants showed little relationship with temperature (r = 0.08, p = 0.744). In forested systems, all guilds exhibited negative correlations, with the strongest observed in long-distance migrants (r = -0.39, p = 0.123), followed by short-distance migrants (r = -0.31, p = 0.235) and winter residents (r = -0.27, p = 0.293). Overall, these results indicate no statistically supported relationship between temperature and abundance, although the predominance of negative correlations suggests a consistent but weak tendency for abundance to decline with increasing temperature across guilds.
 
 ```{r Plot climate-abundance relationship}
 #| warning: false
@@ -2331,21 +2323,21 @@ This report is created dynamically to allow new data and results to be added as 
 
 **Option 1**: Use the `.RData` file directly. This approach is best if you only need to reproduce results without modifying upstream data processing.
 
-1. Download the provided `.RData` file to your local machine.  
-2. Place it in the working directory of the Quarto project (or update the `load()` path in the document to match its location).  
-3. Open the `.qmd` file in RStudio (or another Quarto-compatible editor).  
-4. Ensure the setup chunk includes a call to `load("janp.RData")`.  
-5. Run the document:
-   - Render the full report (`Render` button or `quarto render`), or  
-   - Execute code chunks interactively.  
+1.  Download the provided `.RData` file to your local machine.\
+2.  Place it in the working directory of the Quarto project (or update the `load()` path in the document to match its location).\
+3.  Open the `.qmd` file in RStudio (or another Quarto-compatible editor).\
+4.  Ensure the setup chunk includes a call to `load("janp.RData")`.\
+5.  Run the document:
+    -   Render the full report (`Render` button or `quarto render`), or\
+    -   Execute code chunks interactively.
 
 **Option 2**: Clone or fork the repository. This approach is preferable if you plan to modify the analysis, update inputs, or integrate the workflow into a larger pipeline.
 
-1. Fork or clone the repository to your local machine.  
-2. Open the project in RStudio (recommended to preserve relative paths).  
-3. Confirm the `.RData` file is present in the expected directory.  
-4. Verify that all required packages are installed (install any missing dependencies).  
-5. Run or render the `.qmd` file as above.  
+1.  Fork or clone the repository to your local machine.\
+2.  Open the project in RStudio (recommended to preserve relative paths).\
+3.  Confirm the `.RData` file is present in the expected directory.\
+4.  Verify that all required packages are installed (install any missing dependencies).\
+5.  Run or render the `.qmd` file as above.
 
 The `.RData` file restores all required objects into the global environment; no data import steps are required unless you intend to regenerate it. If objects are missing or errors occur, confirm that the `.RData` file matches the version expected by the report. For reproducibility, avoid overwriting objects in the early chunks unless intentional.
 
@@ -2373,4 +2365,3 @@ purrr::walk(species_list2, function(sp) {
 
 cat(":::\n")
 ```
-
