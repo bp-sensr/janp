@@ -240,11 +240,11 @@ In 2007, Jasper National Park established a long-term passive acoustic monitorin
 
 Incidence-based metrics treat a single detection the same as a commonly observed species, obscuring ecologically meaningful differences in population status. Abundance fluctuates more than occurrence and is more directly linked to extinction risk, making it better suited for diagnosing decline and recovery and for capturing the resilience of biodiversity to ongoing environmental pressures. A species-specific decline threshold of 2.5% per year (approximately 20% over ten years) was applied throughout, consistent with the IUCN Vulnerable listing criteria and the Partners in Flight Conservation Urgency benchmark, under which species projected to lose 50% of their population within 30 years (\~2.3% per year) are considered high urgency (@rosenberg2019decline).
 
-This report analyzes Jasper's passive acoustic bird monitoring data from 2007 to 2025. Because birds serve as ecological indicators in both the forest and alpine ecosystems reported in Jasper's State of the Park Report, separate analyses were conducted for the forested ecoregion (encompassing the montane, lower subalpine, and upper subalpine ecoregions) and the alpine ecoregion. To enhance accessibility and reproducibility, findings are presented in this online report with fully documented code, supporting future updates as data collection methods become further standardized. Recommendations are also provided to refine transcription priorities, improve annual reporting workflows, and evaluate species guild classifications for long-term monitoring.
+This report analyzes Jasper's passive acoustic bird monitoring data from 2007 to 2026. Because birds serve as ecological indicators in both the forest and alpine ecosystems reported in Jasper's State of the Park Report, separate analyses were conducted for the forested ecoregion (encompassing the montane, lower subalpine, and upper subalpine ecoregions) and the alpine ecoregion. To enhance accessibility and reproducibility, findings are presented in this online report with fully documented code, supporting future updates as data collection methods become further standardized. Recommendations are also provided to refine transcription priorities, improve annual reporting workflows, and evaluate species guild classifications for long-term monitoring.
 
 The objectives of this report are to:
 
--   Describe the data management and processing procedures for acoustic data collected from 2007 to 2025.
+-   Describe the data management and processing procedures for acoustic data collected from 2007 to 2026.
 -   Compare how different data processing methods influence the count of species and individuals detected on recordings.
 -   Report on trends in bird abundance by species and by guild in the forest and alpine ecoregions, incorporating time-to-first-detection analysis.
     -   Summarize results by ecoregion as the percentage of species and guilds declining by ≥2.5% in both forest and alpine regions.
@@ -260,7 +260,7 @@ The objectives of this report are to:
 
 ## Bird surveys
 
-Monitoring for forest and alpine birds in Jasper National Park has been conducted annually since 2007 across a core set of 129 sites, with 20 sites that were added in 2025 after the Jasper 2024 fire (see @sec-jasper-fire). To ensure long-term feasibility, sites were clustered along transects, and transects were randomly selected from hiking trails that were at least 500 m away from roads and were at least five kilometers apart. To sample the diversity of birds in the park, transects were stratified by ecological region. Songbird data were collected using autonomous recording units (ARUs; @aru-overview) deployed by field staff to capture one 10-minute recording per point count annually. Surveys were scheduled consistently each breeding season in June and early July, starting 30 minutes before sunrise. Technicians walked transects containing nine or ten points, each spaced at least 300 m apart to prevent duplicate detections and ensure independence of locations (but see @sec-independent-locations). At each location, the ARU was set up, and technicians moved 10–20 m away to minimize disturbance, allowing at least 11 minutes of recording to capture voice notes and the standardized 10-minute survey period. Five covariates thought to influence detection or abundance were recorded: start time, wind speed (km/h), temperature (°C), cloud cover (overcast, broken, scattered, clear) and recording equipment. Recording equipment varied throughout the course of the study. During the 2021 and 2022 field seasons, paired recordings were collected concurrently at each site using both Wildlife Acoustics SM4 autonomous recording units and the original recording devices (Riverforks CZM or Zoom H2N Pro, depending on site-specific deployment). This dual-recording approach was implemented to support calibration and continuity across equipment types. However, to maintain consistency in data processing, only recordings from the original devices were transcribed and included in the final analyses for those years. Beginning in 2023, recordings were collected exclusively using SM4 units.
+Monitoring for forest and alpine birds in Jasper National Park has been conducted annually since 2007 across a core set of 129 sites, with 20 sites that were added in 2026 after the Jasper 2024 fire (see @sec-jasper-fire). To ensure long-term feasibility, sites were clustered along transects, and transects were randomly selected from hiking trails that were at least 500 m away from roads and were at least five kilometers apart. To sample the diversity of birds in the park, transects were stratified by ecological region. Songbird data were collected using autonomous recording units (ARUs; @aru-overview) deployed by field staff to capture one 10-minute recording per point count annually. Surveys were scheduled consistently each breeding season in June and early July, starting 30 minutes before sunrise. Technicians walked transects containing nine or ten points, each spaced at least 300 m apart to prevent duplicate detections and ensure independence of locations (but see @sec-independent-locations). At each location, the ARU was set up, and technicians moved 10–20 m away to minimize disturbance, allowing at least 11 minutes of recording to capture voice notes and the standardized 10-minute survey period. Five covariates thought to influence detection or abundance were recorded: start time, wind speed (km/h), temperature (°C), cloud cover (overcast, broken, scattered, clear) and recording equipment. Recording equipment varied throughout the course of the study. During the 2021 and 2022 field seasons, paired recordings were collected concurrently at each site using both Wildlife Acoustics SM4 autonomous recording units and the original recording devices (Riverforks CZM or Zoom H2N Pro, depending on site-specific deployment). This dual-recording approach was implemented to support calibration and continuity across equipment types. However, to maintain consistency in data processing, only recordings from the original devices were transcribed and included in the final analyses for those years. Beginning in 2023, recordings were collected exclusively using SM4 units.
 
 ::: {.callout-note collapse="true" style="background-color: #f4f4f4; padding: 20px;"}
 The 2012 field season was reduced significantly and was not included in some of the subsequent analyses. Refer to @tbl-loc-summary for more information.
@@ -559,7 +559,6 @@ summary(inds_mod)
 summary(rich_mod)
 
 ### Weather plots
-
 ggplot(janp_inds, aes(x = sky, y = inds)) +
   geom_boxplot() +
   facet_wrap(~ecoregion) +
@@ -595,7 +594,7 @@ ggplot(janp_richness, aes(x = sky, y = richness)) +
 
 ## Vegetation variables
 
-We used the existing Vegetation Resource Inventory (VRI, @GovernmentOfAlberta2022) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (@tbl-hab-var). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects as simply "Burned" for the 2025 data. This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.
+We used the existing Vegetation Resource Inventory (VRI, @GovernmentOfAlberta2022) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (@tbl-hab-var). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects **mark** as simply "Burned" for the 2025 and 2026 data **mark** . This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.
 
 ```{r Habitat variables}
 #| warning: false
@@ -630,7 +629,7 @@ datatable(hab_var) |>
 
 ## Data management, processing and quality control
 
-Recordings were clipped and organized to only include the 10-minute count. Before adopting [WildTrax](https://wildtrax.ca) in 2021, processing analysts excluded the initial 20 seconds to 1.5 minutes of recordings to reduce human impact on detection probability, then logged the first detection time per species. Recordings are now uploaded as clean 10-minute files with the voice note and observer notes removed. In WildTrax, individuals were counted by users scanning both the spectrogram and listening to the audio output (@MacPhail2026_avian). Tags of each species-individual were drawn to encompass each signal (@fig-acousticprocessing). Transcribers also had locations photos available to optimize their species identification by having habitat context while processing. To ensure comparability across the 18-year dataset, we harmonized the abundance metrics derived from the differing transcription protocols prior to analysis. For legacy data collected between 2012 and 2020 using the 3-minute interval method, we calculated abundance as the maximum count observed in any single time bin rather than summing across bins. This conservative approach prevents the double-counting of individuals that sing continuously throughout the recording. Conversely, for data processed or re-transcribed using the modern 1SPT protocol (time of first detection of each unique individual of each species; 2007–2011 and 2021–2025), abundance was defined as the total count of unique individuals detected over the full 10-minute duration. Specifically, in WildTrax maximum count of individuals was used (i.e. AMRO1, AMRO2, AMRO3 max of 3 represents 3 individuals total).
+Recordings were clipped and organized to only include the 10-minute count. Before adopting [WildTrax](https://wildtrax.ca) in 2021, processing analysts excluded the initial 20 seconds to 1.5 minutes of recordings to reduce human impact on detection probability, then logged the first detection time per species. Recordings are now uploaded as clean 10-minute files with the voice note and observer notes removed. In WildTrax, individuals were counted by users scanning both the spectrogram and listening to the audio output (@MacPhail2026_avian). Tags of each species-individual were drawn to encompass each signal (@fig-acousticprocessing). Transcribers also had locations photos available to optimize their species identification by having habitat context while processing. To ensure comparability across the 18-year dataset, we harmonized the abundance metrics derived from the differing transcription protocols prior to analysis. For legacy data collected between 2012 and 2020 using the 3-minute interval method, we calculated abundance as the maximum count observed in any single time bin rather than summing across bins. This conservative approach prevents the double-counting of individuals that sing continuously throughout the recording. Conversely, for data processed or re-transcribed using the modern 1SPT protocol (time of first detection of each unique individual of each species; 2007–2011 and 2021–2026), abundance was defined as the total count of unique individuals detected over the full 10-minute duration. Specifically, in WildTrax maximum count of individuals was used (i.e. AMRO1, AMRO2, AMRO3 max of 3 represents 3 individuals total).
 
 ```{r Transcription method table}
 #| warning: false
@@ -641,10 +640,10 @@ Recordings were clipped and organized to only include the 10-minute count. Befor
 #| label: tbl-transcriptions
 #| collapse: true
 #| code-fold: true
-#| tbl-cap: Transcription methods by year (2007–2025). Historical data (2007–2020) are undergoing re-transcription to align with the standardized protocol used from 2021 onwards.
+#| tbl-cap: Transcription methods by year (2007–2026). Historical data (2007–2020) are undergoing re-transcription to align with the standardized protocol used from 2021 onwards.
 
 transcription_table <- tibble(
-  Years = c("2012-2020", "2021-2022", "2007-2011, 2023-2025"),
+  Years = c("2012-2020", "2021-2022", "2007-2011, 2023-2026"),
   `Transcription Method` = c(
     "3 Bins, abundance calculated from the bin with the highest count by species",
     "Every new individual is tagged but cap of max 3 individuals.",
@@ -735,9 +734,9 @@ Our analysis proceeded in the following steps. We:
 1.  Assessed if the new montane sites were effective reference sites for the montane;
 2.  Evaluated consistency in species identification and abundance estimates across transcription methods and observers; 3, Selected species and grouped species by guild for trend analysis;
 3.  Characterized community composition by the alpine and forest ecoregions;
-4.  Examined the initial effect of the 2025 Jasper Wildfire on bird community composition;
+4.  Examined the initial effect of the 2024 Jasper Wildfire on bird community composition;
 5.  Modeled temporal changes in functional and community-level diversity; and
-6.  Quantified long-term abundance trends (2007–2025), accounting for detection probability and addressing spatial autocorrelation.
+6.  Quantified long-term abundance trends (2007–2026), accounting for detection probability and addressing spatial autocorrelation.
 
 ![Conceptual model of analytical framework](./assets/JasperConceptualModel.png)
 
@@ -885,12 +884,12 @@ run_spatial_tests()
 
 The 2024 Jasper Wildfire severely burned two established acoustic transects (VALLEY5 and TEKKARA). While 41% of the montane (valley-bottom) forest has burned since 2023, two of three transects in this ecoregion were severely burned. The remaining transect is scheduled for Wildfire Risk Reduction treatment. To continue to monitor bird communities in unburned/untreated montane forest, we added two new reference transects in 2025 in the montane (COTTONWOOD and MUSHROOM), and we plan to continue to monitor all transects moving forward. We selected these new transects using Vegetation Resource Inventory data, identifying sites across the montane ecoregion with landcover types that matched the pre-fire dominant land cover types of the burned transect. Final transect placement followed the original sampling design criteria.
 
-To assess whether the new transects were appropriate references for montane transects, we evaluated how similar their species assemblages were to those observed at existing montane transects over the past three years (2023-2025), excluding the TEKARRA and VALLEY5 transects post-fire because these were expected to diverge substantially due to fire severity. Specifically, we compared species detections from the COTTONWOOD and MUSHROOM transects to the distribution of detections across all other montane points to quantify compositional similarity and departure from the montane baseline. Representativeness of control transects was assessed using a multivariate dispersion analysis (PERMDISP) based on Bray–Curtis dissimilarity, with distances of new transects to the montane centroid compared against the distribution of distances among established montane transects. Statistical significance of differences in dispersion was evaluated using a permutation test with 999 iterations.
+To assess whether the new transects were appropriate references for montane transects, we evaluated how similar their species assemblages were to those observed at existing montane transects over the past four years (2023-2026), excluding the TEKARRA and VALLEY5 transects post-fire because these were expected to diverge substantially due to fire severity. Specifically, we compared species detections from the COTTONWOOD and MUSHROOM transects to the distribution of detections across all other montane points to quantify compositional similarity and departure from the montane baseline. Representativeness of control transects was assessed using a multivariate dispersion analysis (PERMDISP) based on Bray–Curtis dissimilarity, with distances of new transects to the montane centroid compared against the distribution of distances among established montane transects. Statistical significance of differences in dispersion was evaluated using a permutation test with 999 iterations.
 
 ::: figure-grid
-![Tekarra 9 2024](assets/tekarra9-2024.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"}
+![Tekarra 9 2023](assets/tekarra9-2024.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"}
 
-Tekarra 9 site photos views from 2024 (A) pre-fire, and 2025 (B) post-fire.
+Tekarra 9 site photos views from 2023 (A) pre-fire, and 2025 (B) post-fire.
 :::
 
 ### Transcription observer comparisons
@@ -1085,11 +1084,11 @@ spp_rich_location <- janp_main |>
 
 ### Jasper 2024 fire effects {#sec-jasper-fire}
 
-We characterized the shift in bird community composition on the VALLEY5 and TEKARRA transects using redundancy analysis (RDA). We constructed a species-by-site community matrix using maximum abundance counts, restricting the pre-fire baseline to data from the montane ecoregion collected over the three years prior to the wildfire (2022–2024). We then modeled community structure as a function of fire period (pre-fire vs. post fire). This constrained ordination allows us to quantify the variation in species assemblages explicitly explained by the fire event and visualize the directional responses of individual species
+We characterized the shift in bird community composition on the VALLEY5 and TEKARRA transects post-fire using redundancy analysis (RDA) using the `vegan::rda` function. We constructed a species-by-site community matrix using maximum abundance counts, restricting the pre-fire baseline to data from the montane ecoregion collected over the three years prior to the wildfire (2022–2024). We then modeled community structure as a function of years since fire with years < 2024 being 0. This constrained ordination allows us to quantify the variation in species assemblages explicitly explained by the fire event and visualize the directional responses of individual species across years.
 
 ### Trend analysis
 
-To quantify temporal changes in bird populations and community composition from 2007 to 2025, we analyzed trends in species-specific abundance, in forest and alpine ecoregions separately, and grouping species by functional guilds. Analyses were designed to separate biological change from potential sampling and methodological effects, ensuring that observed patterns represented genuine ecological responses. This was achieved through a multi-step framework that (1) evaluated and modeled detection probability and methodological variability, (2) estimated detection-corrected abundance, and (3) evaluated long-term directional trends and associated shifts in functional and community-level diversity.
+To quantify temporal changes in bird populations and community composition from 2007 to 2026, we analyzed trends in species-specific abundance, in forest and alpine ecoregions separately, and grouping species by functional guilds. Analyses were designed to separate biological change from potential sampling and methodological effects, ensuring that observed patterns represented genuine ecological responses. This was achieved through a multi-step framework that (1) evaluated and modeled detection probability and methodological variability, (2) estimated detection-corrected abundance, and (3) evaluated long-term directional trends and associated shifts in functional and community-level diversity.
 
 INSERT Generalized framework model figure
 
@@ -1106,7 +1105,7 @@ For alpine model selection, we constructed a candidate model set incorporating o
 
 #### Forested model structure
 
-In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, broadleaf cover, mixedwood cover, water cover, human (urban and road surface), herbaceous cover (graminoid, mixed and forbs), and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2025 was added to models but created complexity in the models by variance inflation factor testing.
+In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, broadleaf cover, mixedwood cover, water cover, human (urban and road surface), herbaceous cover (graminoid, mixed and forbs), and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2026 was added to models but created complexity in the models by variance inflation factor testing.
 
 -   **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Conifer) + β₃(Broadleaf) + β₄(Mixedwood) + β₅(mean_tree_height) + β₆(mean_shrub_height)
 -   **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(wind) + α₃(julian) + α₄(hour) + α₅(detection_time) + α₆(data_type) + α₇(mean_tree_height) + α₈(canopy_cover)
@@ -1142,9 +1141,8 @@ Multivariate dispersion was similar between the new reference transects (COTTONW
 comm_matrix1 <- janp_main |>
   mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "Alpine",
                                ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested")) |>
-  filter(!(grepl("VALLEY5|TEKARRA",location) & year > 2024), year %in% c(2023:2025)) |>
+  filter(!(grepl("VALLEY5|TEKARRA",location) & year > 2024), year %in% c(2023:2026)) |>
   wt_tidy_species(remove = c("mammal","amphibian","abiotic","insect","unknown"), zerofill = T) |>
-  
   group_by(location, ecoregion, species_code) |>
   summarise(individual_order = max(individual_order)) |>
   ungroup() |>
@@ -1446,7 +1444,7 @@ shannon_d |>
 
 ## Jasper 2024 fire effects
 
-The redundancy analysis (RDA) revealed a clear and significant reorganization of the bird community following the 2024 wildfire. Pre-and post-wildfire survey points occupy overlapping but shifted regions in the ordination space (@fig-after-fire). This indicates that while the fire did not completely replace the community, it drove a consistent reorganization of species composition. This pattern characterizes a classic disturbance-driven shift rather than a community collapse or reset. The post-fire ellipse is significantly shifted and expanded indicating greater variability among sites after fire and more heterogeneous species assemblages. Species vectors identify taxa contributing most strongly to these differences, suggesting that the Jasper Wildfire altered species associations rather than uniformly affecting overall abundance. Dark-eyed Junco (*Junco hyemalis*, DEJU) shows a strong directional association with post-fire sites (they tolerate reduced canopy cover and more simplified forest structure), while Swainson’s Thrush (*Catharus ustulatus*, SWTH), Warbling Vireo (*Vireo gilvus*, WAVI), and Tennessee Warbler (*Leiothlypis peregrina*, TEWA) were strongly associated with pre-fire assemblages, and are generally associated with intact forest canopy and vertical foliage structure. This indicates that structurally complex forest conditions were an important component of bird community composition prior to the Jasper Fire.
+The redundancy analysis (RDA) revealed a progressive reorganization of the bird community in the two years following the 2024 wildfire. Reference, 1-year post-fire, and 2-year post-fire survey points occupy increasingly separated regions along RDA1, the axis constrained by years since fire (@fig-after-fire). Rather than shifting once and stabilizing, post-fire sites continued to diverge from Reference conditions between year 1 and year 2, with almost no overlap between the 2-year post-fire ellipse and the Reference ellipse. This indicates that, at least over this short time frame, the bird community has not begun returning toward its pre-fire composition — the reorganization driven by the fire is still deepening rather than reversing. Notably, the spread of sites within each fire period (ellipse size) was similar across all three groups, suggesting that fire has not made site-to-site composition more variable, but has consistently displaced it in a common direction. Species vectors help characterize this directional shift. Dark-eyed junco (*Junco hyemalis*, DEJU) again shows the strongest association with post-fire sites, consistent with its known tolerance of reduced canopy cover and simplified forest structure following disturbance. Swainson's thrush (*Catharus ustulatus*, SWTH), Warbling vireo (*Vireo gilvus*, WAVI), Mountain chickadee (*Poecile gambeli*, MOCH), and Yellow-rumped warbler (*Setophaga coronata*, YRWA) remain most strongly associated with Reference sites, along with Tennessee warbler (*Leiothlypis peregrina*, TEWA), Alder flycatcher (*Empidonax alnorum*, ALFL), Ruby-crowned Kinglet (*Corthylio calendula*, RCKI), and Blackpoll Warbler (*Setophaga striata*, BLPW), all species generally tied to intact canopy cover and vertical foliage structure. Common Yellowthroat (*Geothlypis trichas*, COYE) stood out along PC1 rather than RDA1, indicating its abundance varies with background site-level factors unrelated to time since fire. Together, these results suggest that two years post-fire, the VALLEY5 and TEKARRA bird communities have not shown signs of recovery toward pre-fire composition — the community continues to reorganize around fire-tolerant, open-canopy species such as DEJU, at the expense of canopy-dependent species like SWTH, WAVI, and TEWA.
 
 ```{r Plot pre-post community differences after the Jasper 2024 fire}
 #| warning: false
@@ -1458,56 +1456,56 @@ The redundancy analysis (RDA) revealed a clear and significant reorganization of
 #| fig-cap: Community matrix of species associations before and after the Jasper 2024 fire on the VALLEY5 and TEKARRA transects. Movement along RDA1 reflects the direction and magnitude of fire-related change in species composition. PC1 captures residual variation in species composition that is not explained by fire period reflecting the background ecological variability among sites.
 
 janp_fire_comm <- janp_main |>
-  filter(grepl("VALLEY5|TEKARRA",location)) |>
+  filter(grepl("VALLEY5|TEKARRA", location)) |>
+  filter(species_code != "NONE") |>
   group_by(location, year, species_code) |>
   summarise(individual_order = max(individual_order)) |>
   ungroup() |>
-  mutate(fire_period = if_else(year < 2025, "Pre-fire", "Post-fire")) |>
-  filter(!(species_code == "NONE"))
- 
+  mutate(years_post_fire = case_when(year < 2025 ~ 0,
+                                     year >= 2025 ~ year - 2024),
+         fire_period = case_when(year < 2025 ~ "Reference",
+                                 year == 2025 ~ "1 year post-fire",
+                                 year == 2026 ~ "2 years post-fire",
+                                 TRUE ~ NA_character_),
+         fire_period = factor(fire_period,
+                              levels = c("Reference", "1 year post-fire", "2 years post-fire")))
+
 comm_mat_fire <- janp_fire_comm |>
-  pivot_wider(
-    names_from = species_code,
-    values_from = individual_order,
-    values_fill = 0) |>
-  drop_na()
+  pivot_wider(names_from = species_code, values_from = individual_order, values_fill = 0)
 
 env_fire <- comm_mat_fire |>
-  mutate(
-    location = factor(location),
-    fire_period = factor(fire_period)
-  ) |>
-  drop_na()
+  select(location, year, years_post_fire, fire_period) |>
+  mutate(location = factor(location))
 
-t3_fire <- rda(comm_mat_fire[,-c(1:3)] ~ fire_period, data = env_fire)
-t3scores_fire <- scores(t3_fire, display = "sites") |>
+species_mat_fire <- comm_mat_fire |>
+  select(-location, -year, -years_post_fire, -fire_period)
+
+species_hell_fire <- decostand(species_mat_fire, method = "hellinger")
+
+rda_fire <- rda(species_hell_fire ~ years_post_fire, data = env_fire)
+
+rda_scores_fire <- scores(rda_fire, display = "sites") |>
   as.data.frame() |>
   rownames_to_column("site") |>
   bind_cols(env_fire)
-t3vect_fire <- scores(t3_fire, display = "species") |>
-  as.data.frame()
 
-plot_RDA_fire <- ggplot(data = t3scores_fire, aes(x = RDA1, y = PC1)) +
-  geom_point(data = t3scores_fire, aes(x = RDA1, y = PC1, colour = fire_period), 
-             alpha = 0.7, size = 3, shape = 16) +
-  stat_ellipse(data = t3scores_fire, aes(colour = fire_period), 
-               linetype = 1, type = 'norm', level = 0.67, size = 1) +
-  geom_vline(xintercept = 0, color = "#A19E99", linetype = 2, size = 1) +
-  geom_hline(yintercept = 0, color = "#A19E99", linetype = 2, size = 1) +
-  geom_segment(data = t3vect_fire, aes(x = 0, y = 0, xend = RDA1, yend = PC1), 
-               arrow = arrow(length = unit(0.2, "cm")), size = 0.3) +
-  geom_text_repel(data = t3vect_fire, aes(x = RDA1, y = PC1, label = rownames(t3vect_fire)), 
-                  size = 3, colour = "black", fontface = "italic", 
-                  max.overlaps = 10, 
-                  segment.color = "grey70") +
+rda_species_fire <- scores(rda_fire, display = "species") |>
+  as.data.frame() |>
+  rownames_to_column("species")
+
+plot_RDA_fire <- ggplot(data = rda_scores_fire, aes(x = RDA1, y = PC1)) +
+  geom_point(aes(colour = fire_period), alpha = 0.7, size = 3, shape = 16) +
+  stat_ellipse(aes(group = fire_period, colour = fire_period), type = "norm", level = 0.67, linewidth = 1) +
+  geom_vline(xintercept = 0, colour = "#A19E99", linetype = 2, linewidth = 0.7) +
+  geom_hline(yintercept = 0, colour = "#A19E99", linetype = 2, linewidth = 0.7) +
+  geom_segment(data = rda_species_fire, aes(x = 0, y = 0, xend = RDA1, yend = PC1), 
+               arrow = arrow(length = unit(0.2, "cm")), linewidth = 0.3, colour = "grey40") +
+  geom_text_repel(data = rda_species_fire, aes(x = RDA1, y = PC1, label = species), 
+                   size = 3, colour = "black", fontface = "italic", max.overlaps = 10, segment.color = "grey70") +
   theme_bw() +
   scale_colour_viridis_d(option = "cividis", end = 0.9) +
-  labs(x = "RDA1", y = "PC1", title = "Pre-post Jasper Fire species associations", 
-       colour = "Fire Period") +
-  theme(legend.position = "right", 
-        legend.title = element_text(size = 10), 
-        legend.text = element_text(size = 9), 
-        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
+  labs(x = "RDA1", y = "PC1", colour = "Fire period") +
+  theme(legend.position = "right", legend.title = element_text(size = 10), legend.text = element_text(size = 9), plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
 
 plot_RDA_fire
 
@@ -2301,11 +2299,11 @@ datatable(clim_guilds |>
 
 ## Flocking and gregarious species
 
-Point count and acoustic surveys are poorly suited to estimating abundance for flocking and gregarious species such as fringillids, corvids, and family-grouped passerines. Detections of these species at a single location often reflect a single flock or family group rather than independent individuals, violating the closure and independence assumptions underlying the svabu framework. As a result, estimated abundance for these species should be interpreted cautiously and may be better understood as an index of presence or activity rather than a reliable count of individuals. This limitation is discussed in detail in Stralberg et al. (2025).
+Point count and acoustic surveys are poorly suited to estimating abundance for flocking and gregarious species such as fringillids, corvids, and family-grouped passerines. Detections of these species at a single location often reflect a single flock or family group rather than independent individuals, violating the closure and independence assumptions underlying the svabu framework. As a result, estimated abundance for these species should be interpreted cautiously and may be better understood as an index of presence or activity rather than a reliable count of individuals. This limitation is discussed in detail in Stralberg et al. 2025.
 
 ## Limitations of vegetation variables
 
-Habitat covariates were derived from the BC Vegetation Resource Inventory (VRI) for a single reference year (2020) and assigned to survey locations as static attributes. These variables therefore represent a snapshot of vegetation conditions and do not capture the structural and compositional change that occurred across the full study period (2007–2025). Vegetation communities are dynamic: canopy closure, shrub density, and stand structure shift over time through succession and disturbance processes such as wildfire, insect outbreaks, and windthrow. Assigning a fixed 2020 habitat state to detections from 2007 or 2025 means that habitat attributes may not reflect conditions at the time of detection, particularly at locations that experienced notable change during this interval. As a consequence, estimated abundance trends may not fully account for habitat-driven variation in detection probability or location quality over time. This is a recognized limitation of long-term monitoring programs that rely on periodic or single-epoch vegetation inventories, and future analyses would benefit from incorporating temporally dynamic habitat layers to better disentangle habitat change from genuine abundance trend.
+Habitat covariates were derived from the BC Vegetation Resource Inventory (VRI) for a single reference year (2020) and assigned to survey locations as static attributes. These variables therefore represent a snapshot of vegetation conditions and do not capture the structural and compositional change that occurred across the full study period (2007–2026). Vegetation communities are dynamic: canopy closure, shrub density, and stand structure shift over time through succession and disturbance processes such as wildfire, insect outbreaks, and windthrow. Assigning a fixed 2020 habitat state to detections from 2007 or 2026 means that habitat attributes may not reflect conditions at the time of detection, particularly at locations that experienced notable change during this interval. As a consequence, estimated abundance trends may not fully account for habitat-driven variation in detection probability or location quality over time. This is a recognized limitation of long-term monitoring programs that rely on periodic or single-epoch vegetation inventories, and future analyses would benefit from incorporating temporally dynamic habitat layers to better disentangle habitat change from genuine abundance trend.
 
 ## Influence of environmental variables and climate
 
@@ -2314,32 +2312,6 @@ Weather effects on avian detection are well established but tend to be guild-spe
 Climate variables beyond immediate survey conditions are not currently included in the `svabu` models, and this represents a more fundamental gap. Plots of scaled abundance (λ) alongside mean annual temperature suggest potential climate associations across guilds and ecoregions, in several cases, particularly long-distance migrants and winter residents in forested ecoregions, λ and temperature trend in opposing directions over the study period. These are visual associations only and should not be interpreted causally, but they motivate formally incorporating climate into the abundance or detection process in future model iterations.
 
 This is an important next step given the breadth of climate-driven change already documented in bird communities across western North America. Poleward range shifts are estimated at 1.1–2.2 km per year (Martins et al. 2024; Neate-Clegg et al. 2024), upslope elevational shifts average 1.2 m per year — with considerable among-species variability ranging from 10.4 m downslope to 18.1 m upslope — and breeding phenology has advanced by approximately 0.08 days per year (Neate-Clegg et al. 2024). If species are tracking shifting thermal conditions by moving upslope or arriving earlier, abundance trends estimated at fixed monitoring locations may partly reflect distributional change rather than true population change. Incorporating temperature or other climate covariates into the svabu abundance process would allow these signals to be partitioned more cleanly and would substantially strengthen the inferential value of long-term trend estimates.
-
-# Appendix
-
-## How-to run this Quarto report
-
-This report is created dynamically to allow new data and results to be added as results come in. This depends on a pre-saved workspace (`.RData`) that is loaded at the beginning of the document. All downstream code chunks assume those objects already exist in the environment.
-
-**Option 1**: Use the `.RData` file directly. This approach is best if you only need to reproduce results without modifying upstream data processing.
-
-1.  Download the provided `.RData` file to your local machine.\
-2.  Place it in the working directory of the Quarto project (or update the `load()` path in the document to match its location).\
-3.  Open the `.qmd` file in RStudio (or another Quarto-compatible editor).\
-4.  Ensure the setup chunk includes a call to `load("janp.RData")`.\
-5.  Run the document:
-    -   Render the full report (`Render` button or `quarto render`), or\
-    -   Execute code chunks interactively.
-
-**Option 2**: Clone or fork the repository. This approach is preferable if you plan to modify the analysis, update inputs, or integrate the workflow into a larger pipeline.
-
-1.  Fork or clone the repository to your local machine.\
-2.  Open the project in RStudio (recommended to preserve relative paths).\
-3.  Confirm the `.RData` file is present in the expected directory.\
-4.  Verify that all required packages are installed (install any missing dependencies).\
-5.  Run or render the `.qmd` file as above.
-
-The `.RData` file restores all required objects into the global environment; no data import steps are required unless you intend to regenerate it. If objects are missing or errors occur, confirm that the `.RData` file matches the version expected by the report. For reproducibility, avoid overwriting objects in the early chunks unless intentional.
 
 ## Single-species trend models
 

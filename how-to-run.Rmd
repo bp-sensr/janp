@@ -1,0 +1,30 @@
+---
+title: "how-to-run"
+output: html_document
+---
+
+# Appendix
+
+## How-to run this Quarto report
+
+This report is created dynamically to allow new data and results to be added as results come in. This depends on a pre-saved workspace (`.RData`) that is loaded at the beginning of the document. All downstream code chunks assume those objects already exist in the environment.
+
+**Option 1**: Use the `.RData` file directly. This approach is best if you only need to reproduce results without modifying upstream data processing.
+
+1.  Download the provided `.RData` file to your local machine.\
+2.  Place it in the working directory of the Quarto project (or update the `load()` path in the document to match its location).\
+3.  Open the `.qmd` file in RStudio (or another Quarto-compatible editor).\
+4.  Ensure the setup chunk includes a call to `load("janp.RData")`.\
+5.  Run the document:
+    -   Render the full report (`Render` button or `quarto render`), or\
+    -   Execute code chunks interactively.
+
+**Option 2**: Clone or fork the repository. This approach is preferable if you plan to modify the analysis, update inputs, or integrate the workflow into a larger pipeline.
+
+1.  Fork or clone the repository to your local machine.\
+2.  Open the project in RStudio (recommended to preserve relative paths).\
+3.  Confirm the `.RData` file is present in the expected directory.\
+4.  Verify that all required packages are installed (install any missing dependencies).\
+5.  Run or render the `.qmd` file as above.
+
+The `.RData` file restores all required objects into the global environment; no data import steps are required unless you intend to regenerate it. If objects are missing or errors occur, confirm that the `.RData` file matches the version expected by the report. For reproducibility, avoid overwriting objects in the early chunks unless intentional.

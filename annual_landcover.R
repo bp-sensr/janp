@@ -76,7 +76,7 @@ get_buffer_df <- function(tif_path, pt_geom, buffer_m, year_label, site_label) {
 combos <- expand_grid(site = pts_df$site, year = names(tif_paths))
 
 all_results <- pmap(combos, function(site, year) {
-  pt_geom <- pts_sf$geometry[pts_sf$site == site]
+  pt_geom <- pts_df$geometry[pts_df$site == site]
   get_buffer_df(
     tif_path   = tif_paths[[year]],
     pt_geom    = pt_geom,
@@ -91,17 +91,6 @@ plot_df   <- map_dfr(all_results, "df")
 buff_all  <- map_dfr(all_results, "buff_sf")
 native_crs <- crs(rast(tif_paths[1]))
 
-ggplot(plot_df |> filter(site == "WILCOX-10"), aes(x = x, y = y, fill = class)) +
-  geom_raster() +
-  coord_equal() +
-  facet_wrap(~ year) +
-  scale_fill_manual(values = legend_colors) +
-  theme_void() +
-  theme(
-    legend.position = "right",
-    strip.text = element_text(size = 8)
-  )
-
 pct_df <- plot_df %>%
   count(site, year, class) %>%
   group_by(site, year) %>%
@@ -109,7 +98,6 @@ pct_df <- plot_df %>%
   ungroup()
 
 prop_df <- plot_df |>
-  filter(site == "WILCOX-7") |>
   count(site, year, class) |>
   group_by(site, year) |>
   mutate(proportion = n / sum(n)) |>
@@ -123,54 +111,19 @@ prop_df_year <- prop_df |>
   mutate(proportion = n / sum(n)) |>
   ungroup()
 
-p_bar <- ggplot(prop_df_year, aes(x = factor(year), y = proportion, fill = class)) +
-  geom_col(width = 0.8) +
-  geom_text(aes(label = scales::percent(proportion, accuracy = 0.1)),
-            position = position_stack(vjust = 0.5), size = 2.5) +
-  scale_fill_manual(values = legend_colors) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(
-    title = "Mean land cover proportions within 150 m buffer",
-    x = "Year", y = "Proportion of cells", fill = "Land cover"
-  ) +
-  theme_minimal(base_size = 11)
-
-print(p_bar)
-
-p_line <- ggplot(prop_df_year |> mutate(across(c(year, proportion), as.numeric), proportion = proportion * 100), aes(x = year, y = proportion, colour = class, group = class)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  scale_colour_manual(values = legend_colors) +
-  labs(
-    title = "Land cover proportions across sites through time",
-    x = "Year",
-    y = "Proportion of cells",
-    colour = "Land cover"
-  ) +
-  theme_minimal(base_size = 11) +
-  facet_wrap(~ecoregion)
-
-p_line
-
 all_classes <- unique(plot_df$class)
 
 prop_df_complete <- prop_df |>
   complete(site, year, class = all_classes, fill = list(n = 0, proportion = 0))
 
 pdf <- prop_df_complete |>
-  left_join(janp_main |> select(location, elevation) |> distinct() |> drop_na(), by = c("site" = "location")) |>
+  left_join(janp_main |> select(location) |> distinct() |> drop_na(), by = c("site" = "location")) |>
   group_by(site, year) |>
   mutate(total = sum(n)) |>
   ungroup() |>
   mutate(year = factor(year)) |>
-  filter(!n == 0)
-
-plot_dat |>
-  filter(location == "WILCOX-10") |>
-  group_by(year) |>
-  slice(1) |>
-  ungroup() |>
-  ggplot(aes(x=year,y=lambda_hat)) + geom_point() + geom_smooth() + theme_bw()
+  filter(!n == 0) |>
+  select(-n, -total, -ecoregion)
 
 Methods
 
