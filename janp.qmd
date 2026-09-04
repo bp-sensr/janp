@@ -167,6 +167,12 @@ mis_wea <- read_csv("jasper2425.csv") |>
   distinct() |>
   mutate(Sky = tolower(Sky))
 
+elev_lookup <- wt_get_view("organization_locations", organization = 5344) |>
+  filter(grepl('COTTONWOOD|MUSHROOM',locationName)) |>
+  select(locationName, elevation) |>
+  distinct() |>
+  rename(elevation_new = elevation)
+
 # Bind legacy data with acoustic data
 janp_main <- bind_rows(old_s_max, janp_aru) |>
   group_by(location) |>
@@ -190,7 +196,10 @@ janp_main <- bind_rows(old_s_max, janp_aru) |>
   left_join(old_s_max_temps, by = c("location", "year")) |>
   mutate(temperature = if_else(is.na(temperature), temp, temperature), 
          sky = if_else(is.na(sky), sk, sky),
-         wind = if_else(is.na(wind), wi, wind))
+         wind = if_else(is.na(wind), wi, wind)) |>
+  left_join(elev_lookup, by = c("location" = "locationName")) |>
+  mutate(elevation = coalesce(elevation, elevation_new)) |>
+  select(-elevation_new)
 
 ```
 
@@ -494,6 +503,44 @@ datatable(janp_locs_table,
               backgroundColor = styleEqual(c("NA"), "lightgray"))  
 ```
 
+```{r}
+#| warning: false
+#| echo: true
+#| eval: true
+#| message: false
+#| include: true
+#| label: fig-loc-elev
+#| collapse: true
+#| code-fold: true
+#| fig-cap: Distribution of locations across elevation gradients. Colours indicate reporting ecoregion for this report.
+
+janp_ready_trend |>
+  select(location, latitude, longitude, ecoregion, elevation) |>
+  distinct() |>
+  mutate(new_ecoregion = case_when(
+    ecoregion %in% c("Alpine") ~ "Alpine",
+    ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested"
+  )) |>
+  group_by(location) |>
+  slice(1) |>
+  ungroup() |>
+  mutate(elevation = case_when(location == "CAVELL-5" ~ 2200, TRUE ~ elevation)) |>
+  mutate(ecoregion = factor(ecoregion, levels = ecoregion_order)) |>
+  ggplot(aes(x = ecoregion, y = elevation, color = new_ecoregion)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.15, size = 3, alpha = 0.8) +
+  scale_color_manual(values = c("Alpine" = "#7B3F61",
+                                "Forested" = "#2E8B57")) +
+  theme_bw() +
+  theme(
+    legend.title = element_text("Ecoregion"),
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  ) + ylab("Elevation (m)") + xlab("Ecoregion")
+
+```
+
 ## Weather variables
 
 To examine the influence of weather on species richness and abundance, species richness and abundance were modeled separately for each ecoregion using Poisson generalized linear models with richness and abundance as responses to temperature, cloud cover, wind, Julian day, and hour of day as predictors. In the alpine ecoregion, richness increased with temperature (β = 0.008, p = 0.03) and declined with wind (β = –0.019, p \< 0.001) and hour (β = –0.053, p \< 0.001), with additional reductions under clear and scattered sky conditions. In contrast, richness in the forested ecoregion was dominated by a pronounced seasonal decline (Julian day: β = –0.021, p \< 0.001), alongside negative effects of wind (β = –0.031, p = 0.011) and hour (β = –0.027, p \< 0.001); temperature had no detectable influence. Abundance showed minimal sensitivity to environmental variation; no predictors were significant in the alpine ecoregion, while in the forested ecoregion, only hour exerted a detectable negative effect (β = –0.045, p = 0.006). Temperature and wind were retained in abundance models due to their established influence on avian activity and detection, despite weak effects observed in these exploratory analyses.
@@ -605,22 +652,15 @@ We used the existing Vegetation Resource Inventory (VRI, @GovernmentOfAlberta202
 #| label: tbl-hab-var
 #| collapse: true
 #| code-fold: true
-#| tbl-cap: Description of habitat variables used at each location in the Jasper National Park dataset.
+#| tbl-cap: Proportion of landcover within 150 meter buffer at each location in the Jasper National Park dataset.
 
 hab_var <- janp_ready_trend |>
-    select(location, ecoregion, landcover, VEGETATION_DENSITY, prop_cover,
-           canopy_species, canopy_cover, avg_height, mean_tree_height,
-           mean_shrub_height, mean_shrub_crown_closure) |>
-    group_by(location, ecoregion) |>
+    mutate(year = factor(year)) |>
+    select(location, year, ecoregion, landcover, proportion) |>
+    group_by(location, year, ecoregion) |>
     summarise(
-        landcovers = paste(unique(paste(landcover, VEGETATION_DENSITY, sep=" / ")), collapse="; "),
-        canopy_species = paste(unique(canopy_species), collapse=", "),
-        across(c(canopy_cover, avg_height, mean_tree_height,
-                 mean_shrub_height, mean_shrub_crown_closure), mean, na.rm=TRUE),
-        .groups = "drop"
-    ) |>
+        landcovers = paste(unique(paste(landcover, sep=" / ")), collapse="; ")) |>
   mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "Alpine", ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested"))
-  
   
 datatable(hab_var) |>
   formatRound(columns = names(hab_var)[sapply(hab_var, is.numeric)], digits = 2)
@@ -920,7 +960,7 @@ jmc <- janp_main |> mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "A
 
 The monitoring program dataset produced detections for `r jmc$n[jmc$ecoregion == "Alpine"]` alpine and `r jmc$n[jmc$ecoregion == "Montane"]` montane species. Following recommendations to prioritize species with sufficient statistical power (@prowse2021optimising), we restricted our analysis to native terrestrial bird species for which: (a) Jasper National Park is their breeding range; and (b) the total count across all point count sites exceeded 20 individuals (see @tbl-guilds). Applying these criteria resulted in a final list of `r nrow(trendzz)` focal species. This selection process retained `r round((nrow(janp_main |> filter(species_code %in% trendzz_spp)) / nrow(janp_main))*100,2)`% of all individual detections recorded by the program, ensuring that the analysis captured the vast majority of the biological signal while removing rare or vagrant species that would destabilize trend estimates.
 
-To assess trends in species’ abundances and interpret community-level ecological responses, we assigned species to guilds. Guilds are groups of species that respond in similar ways to environmental changes as a result of similar uses of the environment (@doser2021trends). Directional trends in abundant species can strongly influence the trend of the guilds of which these species are members. Given this limitation, trend analyses of ecological guilds often warrant further examination of common patterns of change among species within the guild. For example, if we find large variation in abundance trends across an ecoregion but not across bird guilds, this may suggest a consistent effect on the entire bird community (@doser2021trends, which can determine if management should target a whole community, specific guilds or individual species. If all or many species within a guild show similar trends in relative abundance, then factors affecting the guild-related life history attributes deserve attention. @pacifici2014guidelines recommend using bird guilds in post-hoc assessment. Species were assigned to guilds using the [Birds of North America](https://birdsna.org), [Elton Traits Database](https://esajournals.onlinelibrary.wiley.com/doi/10.1890/13-1917.1) and bird guidebooks. To examine responses by different guild types we assigned birds by migratory guild (long-distance migrant, short-distance migrant, winter resident), Elton trait (e.g., invertebrate, plant/seed, omnivore), dietary guild (e.g., aerial insectivore, bark forager), and habitat guild (e.g., wetland, forest generalist, late successional forest) (@tbl-guilds).
+To assess trends in species’ abundances and interpret community-level ecological responses, we assigned species to guilds. Guilds are groups of species that respond in similar ways to environmental changes as a result of similar uses of the environment (@doser2021trends). Directional trends in abundant species can strongly influence the trend of the guilds of which these species are members. Given this limitation, trend analyses of ecological guilds often warrant further examination of common patterns of change among species within the guild. For example, if we find large variation in abundance trends across an ecoregion but not across bird guilds, this may suggest a consistent effect on the entire bird community (@doser2021trends, which can determine if management should target a whole community, specific guilds or individual species. If all or many species within a guild show similar trends in relative abundance, then factors affecting the guild-related life history attributes deserve attention. @pacifici2014guidelines recommend using bird guilds in post-hoc assessment. Species were assigned to guilds using the [Birds of North America](https://birdsna.org), [Elton Traits Database](https://esajournals.onlinelibrary.wiley.com/doi/10.1890/13-1917.1) and bird guidebooks. To examine responses by different guild types we assigned birds by migratory guild, Elton trait, dietary guild, and habitat guild (@tbl-guilds).
 
 ### Ecoregion community composition analysis
 
@@ -1316,7 +1356,7 @@ t3vect <- scores(t3, display = "species") %>%
 as.data.frame()
 t3scores <- t3scores |> mutate(ecoregion = if_else(ecoregion == "Montane", "Forested", ecoregion))
 
-plot_RDA <- ggplot(data = t3scores, aes(x = RDA1, y = RDA2)) +
+ggplot(data = t3scores, aes(x = RDA1, y = RDA2)) +
   geom_point(data = t3scores, aes(x = RDA1, y = RDA2, colour = ecoregion), 
              alpha = 0.7, size = 3, shape = 16) +
   stat_ellipse(data = t3scores, aes(colour = ecoregion), 
@@ -1338,7 +1378,6 @@ plot_RDA <- ggplot(data = t3scores, aes(x = RDA1, y = RDA2)) +
         legend.text = element_text(size = 9), 
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
 
-plot_RDA
 ```
 
 ```{r Run PERMANOVA for analysis}
@@ -1493,7 +1532,7 @@ rda_species_fire <- scores(rda_fire, display = "species") |>
   as.data.frame() |>
   rownames_to_column("species")
 
-plot_RDA_fire <- ggplot(data = rda_scores_fire, aes(x = RDA1, y = PC1)) +
+ggplot(data = rda_scores_fire, aes(x = RDA1, y = PC1)) +
   geom_point(aes(colour = fire_period), alpha = 0.7, size = 3, shape = 16) +
   stat_ellipse(aes(group = fire_period, colour = fire_period), type = "norm", level = 0.67, linewidth = 1) +
   geom_vline(xintercept = 0, colour = "#A19E99", linetype = 2, linewidth = 0.7) +
@@ -1506,8 +1545,6 @@ plot_RDA_fire <- ggplot(data = rda_scores_fire, aes(x = RDA1, y = PC1)) +
   scale_colour_viridis_d(option = "cividis", end = 0.9) +
   labs(x = "RDA1", y = "PC1", colour = "Fire period") +
   theme(legend.position = "right", legend.title = element_text(size = 10), legend.text = element_text(size = 9), plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
-
-plot_RDA_fire
 
 ```
 
@@ -1525,287 +1562,267 @@ Single-species trends, and their underlying coefficients with 95% CIs can be fou
 #| include: true
 #| results: hide
 
+pdf_fill <- pdf |>
+  group_by(site) |>
+  slice_max(year, with_ties = TRUE) |>
+  ungroup() |>
+  tidyr::uncount(4) |>
+  group_by(site, class) |>
+  mutate(year = 2023:2026) |>
+  ungroup()
+
+pdf_all <- bind_rows(
+  pdf |> mutate(year = as.integer(as.character(year))),
+  pdf_fill
+)
+
 janp_ready_trend <- janp_main |>
   mutate(equipment_make = case_when(year >= 2023 ~ "Wildlife Acoustics", 
                                     TRUE ~ "RiverForks"),
          equipment_model = case_when(year >= 2023 ~ "SM4",
                                      TRUE ~ "RiverForks")) |>
-  inner_join(lc_150m, by = c("location" = "Point_ID")) |>
-  inner_join(canopy_150m, by = c("location" = "Point_ID")) |>
-  inner_join(understory_150m, by = c("location" = "Point_ID")) |>
+  left_join(pdf_all, by = c("location" = "site", "year" = "year")) |>
+  # Remove single year variables
+  #inner_join(lc_150m, by = c("location" = "Point_ID")) |> 
+  #inner_join(canopy_150m, by = c("location" = "Point_ID")) |>
+  #inner_join(understory_150m, by = c("location" = "Point_ID")) |>
+  rename(landcover = class) |>
   mutate(landcover = case_when(grepl('TEKARRA|VALLEY5', location) & year > 2024 ~ "Burned", TRUE ~ landcover)) |>
   distinct()
 
 # Check for data distribution 
-check_zeroinfl <- function(df, response_col) {
-    response_col <- as.character(response_col)
-    count_formula <- as.formula(paste(response_col, "~ 1"))
-    zero_formula  <- as.formula(paste(response_col, "~ 1 | 1"))
-    pois_mod <- glm(count_formula, family = poisson, data = df)
-    zip_mod  <- pscl::zeroinfl(zero_formula, data = df, dist = "poisson")
-    out <- capture.output(pscl::vuong(pois_mod, zip_mod))
-    raw_line <- out[grepl("^Raw", out)]
-    if(length(raw_line) == 0) return(FALSE) 
-    parts <- strsplit(raw_line, "\\s+")[[1]]
-    parts <- parts[parts != ""]
-    z_val <- as.numeric(parts[2])
-    p_val <- as.numeric(tail(parts, 1))
-    if(!is.na(p_val) && p_val < 0.05 && grepl("model2 > model1", raw_line)) {
-      return(TRUE)   # ZIP justified
-    } else {
-      return(FALSE)  # ZIP not needed
-    }
-  }
+check_zeroinfl <- function(df, response_col, alpha = 0.05) { response_col <- as.character(response_col); count_formula <- as.formula(paste(response_col, "~ 1")); zero_formula <- as.formula(paste(response_col, "~ 1 | 1")); pois_mod <- glm(count_formula, family = poisson, data = df); zip_mod <- pscl::zeroinfl(zero_formula, data = df, dist = "poisson"); out <- capture.output(pscl::vuong(pois_mod, zip_mod)); raw_line <- out[grepl("^Raw", trimws(out))]; if (length(raw_line) == 0) return(FALSE); parts <- strsplit(trimws(raw_line), "\\s+")[[1]]; z_val <- as.numeric(parts[2]); p_val <- as.numeric(tail(parts, 1)); !is.na(z_val) && !is.na(p_val) && p_val < alpha && z_val > 0 }
 
 # Trend function
 run_trend <- function(spp) {
+  
+  set.seed(123)
 
-janp_ready <- janp_ready_trend |>
-  group_by(location, recording_date_time) |>
-  mutate(n_data_type = n_distinct(data_type)) |>
-  ungroup() |>
-  mutate(year = year(recording_date_time), 
-         hour = hour(recording_date_time),
-         julian = yday(recording_date_time)) |>
-  dplyr::select(organization, data_type, n_data_type, project_id, data_type, longitude, latitude, location, elevation,
-                location_id, task_id, ecoregion, landcover, prop_cover,
-                VEGETATION_DENSITY, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, year, hour, julian, observer, species_code,
-                individual_order, abundance, detection_time) |>
-  distinct() |>
-  wt_tidy_species(remove = c("mammal","amphibian","abiotic","insect","human","unknown"), zerofill = T)
+  janp_ready <- janp_ready_trend |>
+    group_by(location, recording_date_time) |>
+    mutate(n_data_type = n_distinct(data_type)) |>
+    ungroup() |>
+    mutate(year = year(recording_date_time), hour = hour(recording_date_time), julian = yday(recording_date_time)) |>
+    dplyr::select(organization, data_type, n_data_type, project_id, data_type, longitude, latitude, location, elevation,
+                  location_id, task_id, ecoregion, landcover, proportion, temperature, wind, recording_date_time, year,
+                  hour, julian, observer, species_code, individual_order, abundance, detection_time) |>
+    distinct() |>
+    wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"), zerofill = TRUE)
 
+  selected_alpine <- janp_ready |>
+    filter(ecoregion == "Alpine") |>
+    distinct(location, recording_date_time, observer) |>
+    group_by(location, recording_date_time) |>
+    slice_sample(n = 1) |>
+    ungroup()
+
+# Keep all records belonging to the randomly selected observer
 janp_alpine <- janp_ready |>
-  filter(!(data_type == "legacy" & year < 2023 & observer == "Theresa Hannah" & n_data_type == 2),
-         !(data_type == "single_visit_0_max" & year < 2021 & observer != "Theresa Hannah"),
-         ecoregion %in% c("Alpine")) 
+  filter(ecoregion == "Alpine") |>
+  semi_join(selected_alpine, by = c("location", "recording_date_time", "observer"))
 
-base_zero_alpine <- janp_alpine |>
-  dplyr::select(location, data_type, elevation, ecoregion, landcover, prop_cover, VEGETATION_DENSITY, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, year, hour, julian, observer, detection_time) |>
-  distinct()
-
-spp_max_alpine <- janp_alpine |>
-  filter(species_code == spp) |>
-  group_by(location, data_type, elevation, ecoregion, landcover, prop_cover, VEGETATION_DENSITY, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, year, hour, julian, observer, species_code, detection_time) |>
-  summarise(individual_order = max(individual_order, na.rm = TRUE)) |>
-  ungroup()
-
-check_spp_alpine <- spp_max_alpine |> filter(species_code == spp) |> dplyr::select(location, recording_date_time, species_code, individual_order) |> distinct()
-
-cat("Species:", spp, "\n")
-cat("Alpine n =", nrow(check_spp_alpine), "\n")
-
-if (nrow(check_spp_alpine) <= 3) {
-  
-  print(paste0("Too little data for Alpine for ", spp))
-  
-  trend_result_alpine <- tibble(ecoregion = "Alpine", tau = NA_real_, p_value = NA_real_, sen_slope = NA_real_, pct_change = NA_real_, trend = NA_character_)
-  lambda_year_alpine <- tibble(year = NA_integer_, lambda_hat = NA_real_)
-  lambda_year_alpine_plot <- tibble(year = NA_integer_, location = NA_character_, ecoregion = NA_character_, lambda_hat = NA_real_)
-  model_fit_alpine <-  tibble(term = NA_character_, estimate = NA_real_, std.error = NA_real_, conf.low  = NA_real_, conf.high = NA_real_, z.value = NA_real_, p.value = NA_real_)
-  
-  } else {
-  
-  jpt_alpine <- base_zero_alpine |>
-    left_join(spp_max_alpine, by = c("location", "data_type", "elevation", "ecoregion", "landcover", "prop_cover", "VEGETATION_DENSITY", "temperature", "wind", "canopy_species", "canopy_cover", "mean_tree_height", "mean_shrub_height", "recording_date_time", "year", "hour", "julian", "observer", "detection_time")) |>
-    mutate(individual_order = tidyr::replace_na(individual_order, 0)) |>
-    filter(!(location == "WILCOX-5" & year == 2022),
-           !is.infinite(individual_order)) |> 
-    mutate(canopy_species = factor(canopy_species), lc_group = case_when(landcover %in% c("Tree Coniferous") ~ "Conifer",
-                                                                         landcover %in% c("Shrub Low", "Shrub Tall") ~ "Shrub",
-                                                                         landcover %in% c("Exposed Soil", "Bedrock", "Talus") ~ "Rock and Soil",
-                                                                         landcover %in% c("Herbaceous Mixed", "Herbaceous Graminoid") ~ "Herbaceous",
-                                                                         TRUE ~ "Other")) |> 
-    dplyr::select(-c(landcover, VEGETATION_DENSITY)) |> 
-    group_by(location, data_type, elevation, ecoregion, canopy_species,  temperature, wind, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, observer, individual_order, year, hour, julian, detection_time) |>
-    pivot_wider(names_from = lc_group, values_from = prop_cover, values_fill = 0, values_fn = sum) |> 
-    ungroup() |> 
-    mutate(across(c(elevation, Shrub, Conifer, Herbaceous, `Rock and Soil`, canopy_cover, mean_tree_height, mean_shrub_height, julian, hour, temperature, wind, detection_time), ~ as.numeric(scale(.x)))) |> 
-    mutate(year_c = scale(year)) |>
+  base_zero_alpine <- janp_alpine |>
+    dplyr::select(location, data_type, elevation, ecoregion, landcover, proportion, temperature, wind,
+                  recording_date_time, year, hour, julian, observer, detection_time) |>
     distinct()
-  
-  print(paste0("Modelling alpine for ", spp))
-  fit_alpine <- svabu(individual_order ~ year_c + Shrub + Conifer + mean_tree_height + mean_shrub_height | temperature + mean_tree_height + wind + data_type + detection_time, data = jpt_alpine, zeroinfl = check_zeroinfl(jpt_alpine, "individual_order"))
-  summary(fit_alpine)
-  model_fit_alpine <- if (!is.null(fit_alpine)) {
-    est <- coef(fit_alpine)
-    ci  <- confint(fit_alpine)
-    se  <- sqrt(diag(vcov(fit_alpine)))
-    ci <- ci[names(est), ]
-    se <- se[names(est)]
-    z <- est / se
-    p <- 2 * pnorm(-abs(z))
-    tibble(
-      term      = names(est),
-      estimate  = est,
-      std.error = se,
-      conf.low  = ci[, 1],
-      conf.high = ci[, 2],
-      z.value   = z,
-      p.value   = p)
+
+  spp_max_alpine <- janp_alpine |>
+    filter(species_code == spp) |>
+    group_by(location, data_type, elevation, ecoregion, landcover, proportion, temperature, wind, recording_date_time, year, hour, julian, observer, species_code, detection_time) |>
+    summarise(individual_order = max(individual_order, na.rm = TRUE)) |>
+    ungroup()
+
+  check_spp_alpine <- spp_max_alpine |> filter(species_code == spp) |>
+    dplyr::select(location, recording_date_time, species_code, individual_order) |> distinct()
+
+  cat("Species:", spp, "\n")
+  cat("Alpine n =", nrow(check_spp_alpine), "\n")
+
+  if (nrow(check_spp_alpine) <= 3) {
+    print(paste0("Too little data for Alpine for ", spp))
+    trend_result_alpine <- tibble(ecoregion = "Alpine", tau = NA_real_, p_value = NA_real_, sen_slope = NA_real_, pct_change = NA_real_, trend = NA_character_)
+    lambda_year_alpine <- tibble(year = NA_integer_, lambda_hat = NA_real_)
+    lambda_year_alpine_plot <- tibble(year = NA_integer_, location = NA_character_, ecoregion = NA_character_, lambda_hat = NA_real_)
+    model_fit_alpine <- tibble(term = NA_character_, estimate = NA_real_, std.error = NA_real_, conf.low = NA_real_, conf.high = NA_real_, z.value = NA_real_, p.value = NA_real_)
+  } else {
+
+    jpt_alpine <- base_zero_alpine |>
+      left_join(spp_max_alpine, by = c("location", "data_type", "elevation", "ecoregion", "landcover", "proportion",
+                                        "temperature", "wind", "recording_date_time", "year", "hour", "julian",
+                                        "observer", "detection_time")) |>
+      mutate(individual_order = tidyr::replace_na(individual_order, 0)) |>
+      filter(!(location == "WILCOX-5" & year == 2022), !is.infinite(individual_order)) |>
+      mutate(lc_group = case_when(landcover %in% c("Exposed_Barren_Land", "Rock_Rubble") ~ "Rock and Soil",
+                                   landcover %in% c("Wetland-Treed") ~ "Treed Wetland",
+                                   TRUE ~ landcover)) |>
+      dplyr::select(-c(landcover)) |>
+      group_by(location, data_type, elevation, ecoregion, temperature, wind, recording_date_time, observer, individual_order, year, hour, julian, detection_time) |>
+      pivot_wider(names_from = lc_group, values_from = proportion, values_fill = 0, values_fn = sum) |>
+      ungroup() |>
+      mutate(across(c(elevation, Shrubs, Coniferous, Herbs, `Rock and Soil`, julian, hour, temperature, wind, detection_time), ~ as.numeric(scale(.x)))) |>
+      mutate(year_c = scale(year)) |>
+      distinct()
+
+    print(paste0("Modelling alpine for ", spp))
+    fit_alpine <- svabu(individual_order ~ year_c + Shrubs + Coniferous + Herbs | temperature + wind + data_type + detection_time,
+                         data = jpt_alpine, zeroinfl = check_zeroinfl(jpt_alpine, "individual_order"))
+    summary(fit_alpine)
+
+    model_fit_alpine <- if (!is.null(fit_alpine)) {
+      est <- coef(fit_alpine)
+      ci <- confint(fit_alpine)
+      se <- sqrt(diag(vcov(fit_alpine)))
+      ci <- ci[names(est), ]
+      se <- se[names(est)]
+      z <- est / se
+      p <- 2 * pnorm(-abs(z))
+      tibble(term = names(est), estimate = est, std.error = se, conf.low = ci[, 1], conf.high = ci[, 2], z.value = z, p.value = p)
+    }
   }
-  
+
   ref_zero_infl_alpine <- jpt_alpine |>
-    summarise(julian = mean(julian, na.rm = TRUE), 
-              hour = mean(hour, na.rm = TRUE),
-              temperature = mean(temperature, na.rm = TRUE),
-              wind = mean(wind, na.rm = TRUE), 
-              detection_time = mean(detection_time, na.rm = TRUE))
-  
+    summarise(julian = mean(julian, na.rm = TRUE), hour = mean(hour, na.rm = TRUE), temperature = mean(temperature, na.rm = TRUE),
+              wind = mean(wind, na.rm = TRUE), detection_time = mean(detection_time, na.rm = TRUE))
+
   newdata_alpine <- jpt_alpine |>
-    mutate(julian = ref_zero_infl_alpine$julian,
-           hour = ref_zero_infl_alpine$hour,
-           temperature = ref_zero_infl_alpine$temperature,
-           wind = ref_zero_infl_alpine$wind,
-           detection_time = ref_zero_infl_alpine$detection_time)
+    mutate(julian = ref_zero_infl_alpine$julian, hour = ref_zero_infl_alpine$hour, temperature = ref_zero_infl_alpine$temperature,
+           wind = ref_zero_infl_alpine$wind, detection_time = ref_zero_infl_alpine$detection_time)
 
   jpt_alpine$lambda_hat <- predict(fit_alpine, newdata = newdata_alpine, type = "response")
-  
+
   lambda_year_alpine <- jpt_alpine |>
     group_by(year) |>
-    summarise(n = sum(!is.na(lambda_hat)),
-              se_lh = sd(lambda_hat, na.rm = TRUE) / sqrt(n),
-              lambda_hat = mean(lambda_hat, na.rm = TRUE)) |>
+    summarise(n = sum(!is.na(lambda_hat)), se_lh = sd(lambda_hat, na.rm = TRUE) / sqrt(n), lambda_hat = mean(lambda_hat, na.rm = TRUE)) |>
     ungroup() |>
     arrange(year) |>
     dplyr::select(-n) |>
     relocate(lambda_hat, .after = year) |>
     mutate(pct_change = (lambda_hat - lag(lambda_hat)) / lag(lambda_hat) * 100) |>
     mutate(total_pct_change = (lambda_hat - first(lambda_hat)) / first(lambda_hat) * 100)
-  
-  lambda_year_alpine_plot <- jpt_alpine |> 
-    dplyr::select(year, location, ecoregion, lambda_hat) |> distinct() |> arrange(year)
-  
+
+  lambda_year_alpine_plot <- jpt_alpine |> dplyr::select(year, location, ecoregion, lambda_hat) |> distinct() |> arrange(year)
+
   x_alpine <- lambda_year_alpine$lambda_hat
   mk_alpine <- mmkh(x_alpine)
   tau <- mk_alpine[6]
   sen_slope <- mk_alpine[7]
   p_value <- mk_alpine[2]
   pct_change <- mk_alpine[["Sen's slope"]] / mean(x_alpine) * 100
-  trend_class <- dplyr::case_when(pct_change >  2.5 ~ "Increasing", pct_change < -2.5  ~ "Decreasing", TRUE ~ "Stable")
-  
+  trend_class <- dplyr::case_when(pct_change > 2.5 ~ "Increasing", pct_change < -2.5 ~ "Decreasing", TRUE ~ "Stable")
+
   trend_result_alpine <- tibble(ecoregion = "Alpine", tau = tau, p_value = p_value, sen_slope = sen_slope, pct_change = pct_change, trend = trend_class)
   
-}
+  selected_forested <- janp_ready |>
+    filter(ecoregion %in% c("Montane", "Upper Subalpine", "Lower Subalpine"), !grepl('COTTONWOOD|MUSHROOM', location), !year == 2012) |>
+    mutate(ecoregion = "Forested") |>
+    filter(ecoregion == "Forested") |>
+    distinct(location, recording_date_time, observer) |>
+    group_by(location, recording_date_time) |>
+    slice_sample(n = 1) |>
+    ungroup()
 
-janp_forested <- janp_ready |>
-  filter(!(data_type == "legacy" & year < 2023 & observer == "Theresa Hannah" & n_data_type == 2),
-         !(data_type == "single_visit_0_max" & year < 2021 & observer != "Theresa Hannah")) |>
-  filter(ecoregion %in% c("Montane", "Upper Subalpine", "Lower Subalpine"), !grepl('COTTONWOOD|MUSHROOM', location), !year == 2012) |>
-  mutate(ecoregion = "Forested") 
-
-base_zero_forested <- janp_forested |>
-  dplyr::select(location, data_type, elevation, ecoregion, landcover, prop_cover, VEGETATION_DENSITY, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, year, hour, julian, observer, detection_time) |>
-  distinct()
-
-spp_max_forested <- janp_forested |>
-  filter(species_code == spp) |>
-  group_by(location, data_type, elevation, ecoregion, landcover, prop_cover, VEGETATION_DENSITY, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, year, hour, julian, observer, species_code, detection_time) |>
-  summarise(individual_order = max(individual_order, na.rm = TRUE)) |>
-  ungroup()
-
-check_spp_forested <- spp_max_forested |> filter(species_code == spp) |> dplyr::select(location, recording_date_time, species_code, individual_order) |> distinct()
-
-cat("Species:", spp, "\n")
-cat("Forested n =", nrow(check_spp_forested), "\n")
-
-if (nrow(check_spp_forested) <= 3) {
-
-  print(paste0("Probably an error in Forested with ", spp))
+  janp_forested <- janp_ready |>
+    semi_join(selected_forested, by = c("location", "recording_date_time", "observer")) |>
+    mutate(ecoregion = "Forested")
   
-  trend_result_forested <- tibble(ecoregion = "Forested", tau = NA_real_, p_value = NA_real_, sen_slope = NA_real_, pct_change = NA_real_, trend = NA_character_)
-  lamba_year_forested <- tibble(year = NA_integer_, lambda_hat = NA_real_)
-  lambda_year_forested_plot <- tibble(year = NA_integer_, location = NA_character_, ecoregion = NA_character_, lambda_hat = NA_real_)
-  model_fit_forested <-  tibble(term = NA_character_, estimate = NA_real_, std.error = NA_real_, conf.low  = NA_real_, conf.high = NA_real_, z.value = NA_real_, p.value = NA_real_)
-  
-} else {
-  
-  jpt_forested <- base_zero_forested |> 
-    left_join(spp_max_forested, by = c("location", "data_type", "elevation", "ecoregion", "landcover", "prop_cover", "VEGETATION_DENSITY", "temperature", "wind", "canopy_species", "canopy_cover", "mean_tree_height", "mean_shrub_height", "recording_date_time", "hour", "year", "julian", "observer", "detection_time")) |>
-    mutate(individual_order = tidyr::replace_na(individual_order, 0)) |>
-    filter(!(location == "WILCOX-5" & year == 2022),
-           !is.infinite(individual_order)) |> 
-    mutate(canopy_species = factor(canopy_species), 
-           lc_group = case_when(landcover %in% c("Tree Coniferous") ~ "Conifer", 
-                                landcover %in% c("Herbaceous Mixed", "Herbaceous Graminoid", "Herbaceous Forb") ~ "Herbaceous",
-                                landcover %in% c("Treed Broadleaf") ~ "Broadleaf",
-                                landcover %in% c("Treed Mixed") ~ "Mixedwood", 
-                                landcover %in% c("Lake","River/Stream") ~ "Water",
-                                landcover %in% c("Burned") ~ landcover,
-                                landcover %in% c("Shrub Low", "Shrub Tall") ~ "Shrub",
-                                landcover %in% c("Exposed Soil", "Bedrock", "Talus") ~ "Rock and Soil", 
-                                landcover %in% c("Urban","Road Surface") ~ "Human",
-                                TRUE ~ landcover), .after = landcover) |> 
-    dplyr::select(-c(landcover, VEGETATION_DENSITY)) |> 
-    group_by(location, ecoregion, temperature, wind, canopy_species, canopy_cover, mean_tree_height, mean_shrub_height, recording_date_time, observer, detection_time, individual_order, year, hour, julian) |>
-    pivot_wider(names_from = lc_group, values_from = prop_cover, values_fill = 0, values_fn = sum) |> 
-    ungroup() |> 
-    mutate(across(c(Shrub, Conifer, Broadleaf, Mixedwood, Herbaceous, Burned, Water, `Rock and Soil`, Human, canopy_cover, mean_tree_height, mean_shrub_height, julian, hour, temperature, wind, detection_time), scale)) |> 
-    mutate(year_c = scale(year)) |>
+  base_zero_forested <- janp_forested |>
+    dplyr::select(location, data_type, elevation, ecoregion, landcover, proportion, temperature, wind, recording_date_time, year, hour, julian, observer, detection_time) |>
     distinct()
-  
-  print(paste0("Modelling forested for ", spp))
-  fit_forested <- svabu(individual_order ~ year_c + Conifer + Broadleaf + Mixedwood + mean_tree_height + mean_shrub_height | temperature + wind + julian + hour + detection_time + data_type + mean_tree_height + canopy_cover, data = jpt_forested, zeroinfl = check_zeroinfl(jpt_forested, "individual_order"))
-  summary(fit_forested)
-  model_fit_forested <- if (!is.null(fit_forested)) {
-    est <- coef(fit_forested)
-    ci  <- confint(fit_forested)
-    se  <- sqrt(diag(vcov(fit_forested)))
-    ci <- ci[names(est), ]
-    se <- se[names(est)]
-    z <- est / se
-    p <- 2 * pnorm(-abs(z))
-    tibble(
-    term = names(est),
-    estimate = est,
-    std.error = se,
-    conf.low = ci[, 1],
-    conf.high = ci[, 2],
-    z.value = z,
-    p.value = p)
-  }
-  
-  ref_zero_infl_forested <- jpt_forested |>
-    summarise(julian = mean(julian, na.rm = TRUE),
-              hour = mean(hour, na.rm = TRUE),
-              temperature = mean(temperature, na.rm = TRUE),
-              wind = mean(wind, na.rm = TRUE),
-              detection_time = mean(detection_time, na.rm = TRUE))
-  
-  newdata_forested <- jpt_forested |>
-    mutate(julian = ref_zero_infl_forested$julian,
-           hour = ref_zero_infl_forested$hour,
-           temperature = ref_zero_infl_forested$temperature,
-           wind = ref_zero_infl_forested$wind, 
-           detection_time = ref_zero_infl_forested$detection_time)
-  
-  jpt_forested$lambda_hat <- predict(fit_forested, newdata = newdata_forested, type = "response")
-  
-  lambda_year_forested <- jpt_forested |>
-    group_by(year) |>
-    summarise(n = sum(!is.na(lambda_hat)),
-              se_lh = sd(lambda_hat, na.rm = TRUE) / sqrt(n),
-              lambda_hat = mean(lambda_hat, na.rm = TRUE)) |>
-    ungroup() |>
-    arrange(year) |>
-    dplyr::select(-n) |>
-    relocate(lambda_hat, .after = year) |>
-    mutate(pct_change = (lambda_hat - lag(lambda_hat)) / lag(lambda_hat) * 100) |>
-    mutate(total_pct_change = (lambda_hat - first(lambda_hat)) / first(lambda_hat) * 100)
-  
-  x_forested <- lambda_year_forested$lambda_hat
-  mk_forested <- mmkh(x_forested)
-  tau       <- mk_forested[6]
-  sen_slope <- mk_forested[7]
-  p_value   <- mk_forested[2]
-  pct_change <- mk_forested[["Sen's slope"]] / mean(x_forested) * 100
-  trend_class <- dplyr::case_when(pct_change >  2.5  ~ "Increasing", pct_change < -2.5  ~ "Decreasing", TRUE ~ "Stable")
-  
-  trend_result_forested <- tibble(ecoregion = "Forested", tau = tau, p_value = p_value, sen_slope = sen_slope, pct_change = pct_change, trend = trend_class)
-  
-}
 
-return(list(bind_rows(trend_result_alpine, trend_result_forested), bind_rows(lambda_year_alpine, lambda_year_forested), bind_rows(lambda_year_alpine_plot, lambda_year_forested_plot), model_fit_alpine, model_fit_forested))
+  spp_max_forested <- janp_forested |>
+    filter(species_code == spp) |>
+    group_by(location, data_type, elevation, ecoregion, landcover, proportion, temperature, wind, recording_date_time, year, hour, julian, observer, species_code, detection_time) |>
+    summarise(individual_order = max(individual_order, na.rm = TRUE)) |>
+    ungroup()
 
+  check_spp_forested <- spp_max_forested |> filter(species_code == spp) |>
+    dplyr::select(location, recording_date_time, species_code, individual_order) |> distinct()
+
+  cat("Species:", spp, "\n")
+  cat("Forested n =", nrow(check_spp_forested), "\n")
+
+  if (nrow(check_spp_forested) <= 3) {
+    print(paste0("Probably an error in Forested with ", spp))
+    trend_result_forested <- tibble(ecoregion = "Forested", tau = NA_real_, p_value = NA_real_, sen_slope = NA_real_, pct_change = NA_real_, trend = NA_character_)
+    lamba_year_forested <- tibble(year = NA_integer_, lambda_hat = NA_real_)
+    lambda_year_forested_plot <- tibble(year = NA_integer_, location = NA_character_, ecoregion = NA_character_, lambda_hat = NA_real_)
+    model_fit_forested <- tibble(term = NA_character_, estimate = NA_real_, std.error = NA_real_, conf.low = NA_real_, conf.high = NA_real_, z.value = NA_real_, p.value = NA_real_)
+  } else {
+
+    jpt_forested <- base_zero_forested |>
+      mutate(ecoregion = case_when(ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested", TRUE ~ ecoregion)) |>
+      left_join(spp_max_forested, by = c("location", "data_type", "elevation", "ecoregion", "landcover", "proportion",
+                                          "temperature", "wind", "recording_date_time", "hour", "year", "julian",
+                                          "observer", "detection_time")) |>
+      mutate(individual_order = tidyr::replace_na(individual_order, 0)) |>
+      filter(!(location == "WILCOX-5" & year == 2022), !is.infinite(individual_order)) |>
+      mutate(lc_group = case_when(landcover %in% c("Exposed_Barren_Land", "Rock_Rubble") ~ "Rock and Soil",
+                                   landcover %in% c("Wetland-Treed") ~ "Treed Wetland",
+                                   TRUE ~ landcover), .after = landcover) |>
+      dplyr::select(-c(landcover)) |>
+      group_by(location, elevation, ecoregion, temperature, wind, recording_date_time, observer, detection_time, individual_order, year, hour, julian) |>
+      pivot_wider(names_from = lc_group, values_from = proportion, values_fill = 0, values_fn = sum) |>
+      ungroup() |>
+      mutate(across(c(elevation, Shrubs, Coniferous, Broadleaf, Mixedwood, Wetland, julian, hour, temperature, wind, detection_time), scale)) |>
+      mutate(year_c = scale(year)) |>
+      mutate_at(vars(elevation, Shrubs, Coniferous, Broadleaf, Mixedwood, Wetland, julian, hour, temperature, wind, detection_time, year_c), as.numeric) |>
+      distinct() |>
+      filter(!is.na(elevation))
+
+    print(paste0("Modelling forested for ", spp))
+    fit_forested <- svabu(individual_order ~ year_c + Coniferous + Wetland + elevation | temperature + wind + julian + hour + detection_time + data_type, data = jpt_forested, zeroinfl = check_zeroinfl(jpt_forested, "individual_order"))
+    summary(fit_forested)
+    
+    model_fit_forested <- if (!is.null(fit_forested)) {
+      est <- coef(fit_forested)
+      ci <- confint(fit_forested)
+      se <- sqrt(diag(vcov(fit_forested)))
+      ci <- ci[names(est), ]
+      se <- se[names(est)]
+      z <- est / se
+      p <- 2 * pnorm(-abs(z))
+      tibble(term = names(est), estimate = est, std.error = se, conf.low = ci[, 1], conf.high = ci[, 2], z.value = z, p.value = p)
+     }
+    }
+
+    ref_zero_infl_forested <- jpt_forested |>
+      summarise(julian = mean(julian, na.rm = TRUE), hour = mean(hour, na.rm = TRUE), temperature = mean(temperature, na.rm = TRUE),
+                wind = mean(wind, na.rm = TRUE), detection_time = mean(detection_time, na.rm = TRUE))
+
+    newdata_forested <- jpt_forested |>
+      mutate(julian = ref_zero_infl_forested$julian, hour = ref_zero_infl_forested$hour, temperature = ref_zero_infl_forested$temperature,
+             wind = ref_zero_infl_forested$wind, detection_time = ref_zero_infl_forested$detection_time)
+
+    jpt_forested$lambda_hat <- predict(fit_forested, newdata = newdata_forested, type = "response")
+
+    lambda_year_forested <- jpt_forested |>
+      group_by(year) |>
+      summarise(n = sum(!is.na(lambda_hat)), se_lh = sd(lambda_hat, na.rm = TRUE) / sqrt(n), lambda_hat = mean(lambda_hat, na.rm = TRUE)) |>
+      ungroup() |>
+      arrange(year) |>
+      dplyr::select(-n) |>
+      relocate(lambda_hat, .after = year) |>
+      mutate(pct_change = (lambda_hat - lag(lambda_hat)) / lag(lambda_hat) * 100) |>
+      mutate(total_pct_change = (lambda_hat - first(lambda_hat)) / first(lambda_hat) * 100)
+
+    lambda_year_forested_plot <- jpt_forested |> dplyr::select(year, location, ecoregion, lambda_hat) |> distinct() |> arrange(year)
+
+    x_forested <- lambda_year_forested$lambda_hat
+    mk_forested <- mmkh(x_forested)
+    tau <- mk_forested[6]
+    sen_slope <- mk_forested[7]
+    p_value <- mk_forested[2]
+    pct_change <- mk_forested[["Sen's slope"]] / mean(x_forested) * 100
+    trend_class <- dplyr::case_when(pct_change > 2.5 ~ "Increasing", pct_change < -2.5 ~ "Decreasing", TRUE ~ "Stable")
+
+    trend_result_forested <- tibble(ecoregion = "Forested", tau = tau, p_value = p_value, sen_slope = sen_slope, pct_change = pct_change, trend = trend_class)
+  
+
+  return(list(bind_rows(trend_result_alpine, trend_result_forested),
+              bind_rows(lambda_year_alpine, lambda_year_forested),
+              bind_rows(lambda_year_alpine_plot, lambda_year_forested_plot),
+              model_fit_alpine, 
+              model_fit_forested))
 }
 
 ```
@@ -1818,7 +1835,7 @@ return(list(bind_rows(trend_result_alpine, trend_result_forested), bind_rows(lam
 #| include: true
 
 # missed 32-SAVS forested,51-HOLA forested,
-trendz16 <- janp_main |>
+trendz_new <- janp_main |>
   mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "Alpine",
                                ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested")) |>
   group_by(species_code, ecoregion) |>
@@ -1834,17 +1851,17 @@ trendz16 <- janp_main |>
   #filter(!ecoregion_total<20) |>
   dplyr::select(-c(ecoregion, ecoregion_total)) |>
   distinct() |>
-  filter(species_code %in% c("MOBL","WEFL")) |>
+  slice(1:10) |>
   mutate(trend = map(species_code, run_trend))
 
 trendzz <- bind_rows(trendz, trendz2, trendz3, trendz4, trendz5, trendz6, trendz7, trendz8, trendz9, trendz10, trendz11, trendz12, trendz13, trendz14, trendz15, trendz16)
 
-coefz <- trendzz |>
+coefz_new <- trendz_new |>
   mutate(model_alpine = map(trend, ~ .x[[4]])) %>%
   mutate(model_montane = map(trend, ~ .x[[5]])) %>%
   dplyr::select(species_code, model_alpine, model_montane)
 
-coefz_long <- coefz %>%
+coefz_long_new <- coefz_new %>%
   pivot_longer(cols = c(model_alpine, model_montane), 
                names_to = "ecoregion", 
                values_to = "model") %>%
@@ -1863,7 +1880,7 @@ coefz_long <- coefz %>%
   drop_na(term) |>
   mutate(alpha_sig = ifelse(p.value < 0.05, "***", ""))
 
-plot_dat <- trendzz |>
+plot_dat_new <- trendz_new |>
   mutate(t = map_chr(trend, ~ class(.x))) |>
   filter(!(t == "logical")) |>
   mutate(trend_summary = map(trend, ~ .x[[3]])) |>
@@ -1890,8 +1907,8 @@ socb <- read_csv("species-status.csv") |>
   drop_na() |>
   slice(-1)
 
-trend_table <- trendzz %>%
-  mutate(trend = map(trend, ~ if(!is.list(.x)) {list(NA)} else {.x})) %>%
+trend_table_new <- trendz_new %>%
+  mutate(trend = map(trend, ~ if(!is.list(.x)) {list(NA)} else {.x})) |>
   mutate(trend = map(trend, 1)) %>%
   unnest_wider(trend, names_sep = "_") %>%
   unnest(cols = everything()) %>%
@@ -1928,7 +1945,7 @@ datatable(trend_table)
 
 plot_trend_coef <- function(species) {
   
-  p1 <- ggplot(plot_dat |> filter(species_code == species), aes(x = year, y = lambda_hat, color = ecoregion)) + 
+  p1 <- ggplot(plot_dat_new |> filter(species_code == species), aes(x = year, y = lambda_hat, color = ecoregion)) + 
           geom_smooth() +
           geom_point(alpha = 0.1) +
           facet_wrap(~species_code, scales = "free_y") +
@@ -1937,7 +1954,7 @@ plot_trend_coef <- function(species) {
           ylab(expression("Detection-corrected abundance ("*hat(lambda)*")")) + 
           xlab("Year")
 
-  p2 <- coefz_long |> 
+  p2 <- coefz_long_new |> 
   filter(species_code == species) |>
   mutate(significant = ifelse(alpha_sig == "*", ecoregion, NA_character_)) |>
   ggplot(aes(x = term, y = estimate, colour = ecoregion)) +
@@ -1950,7 +1967,7 @@ plot_trend_coef <- function(species) {
              position = position_dodge(width = 0.8),
              shape = 21, size = 2.5, stroke = 0.8) +
   coord_flip() +
-  facet_wrap(~component, scales = "free_y") +
+  facet_wrap(~component, scales = "free_x") +
   labs(x = NULL, y = "Coefficient (β)",
        title = "Distribution of coefficients across species by ecoregion") +
   theme_bw() +
@@ -1979,7 +1996,7 @@ return(p1 / p2)
 #| fig-width: 12
 #| fig-height: 10
 
-species_list <- plot_dat |> select(species_code) |> distinct() |> slice(1:5) |> pull() 
+species_list <- plot_dat_new |> select(species_code) |> distinct() |> pull() 
 
 cat("::: {.panel-tabset}\n")
 
@@ -2049,7 +2066,7 @@ trend_guild <- trend_table |>
 #| fig-cap: Summary of trend of migratory guilds
 
 # Guild plots
-plot_dat |> 
+plot_dat_new |> 
   inner_join(guilds) |>
   mutate(migratory_guild = case_when(migratory_guild == "Winter resident" ~ "Winter residents", TRUE ~ migratory_guild)) |>
   group_by(location, year, ecoregion, migratory_guild) |>
@@ -2094,7 +2111,7 @@ datatable(trend_guild |>
 #| label: fig-trend-guilds-hab
 #| fig-cap: Summary of trend of habitat guilds
 
-plot_dat |> 
+plot_dat_new |> 
   inner_join(guilds) |>
   group_by(location, year, ecoregion, habitat_guild) |>
   summarise(mean = mean(lambda_hat)) |>
@@ -2138,7 +2155,7 @@ datatable(trend_guild |>
 #| label: fig-trend-guilds-feeding
 #| fig-cap: Summary of trend of feeding guilds
 
-plot_dat |> 
+plot_dat_new |> 
   inner_join(guilds) |>
   group_by(location, year, ecoregion, dietary_guild) |>
   summarise(mean = mean(lambda_hat)) |>
@@ -2182,7 +2199,7 @@ datatable(trend_guild |>
 #| label: fig-trend-guilds-trait
 #| fig-cap: Summary of trend of feeding guilds
 
-plot_dat |> 
+plot_dat_new |> 
   inner_join(guilds) |>
   drop_na(trait) |>
   group_by(location, year, ecoregion, trait) |>
@@ -2233,7 +2250,7 @@ Correlations between mean annual temperature and abundance were weak and not sta
 
 clim <- read_csv("./assets/climjanp.csv")
 
-clim_guilds <- plot_dat |>
+clim_guilds <- plot_dat_new |>
   inner_join(guilds) |>
   mutate(migratory_guild = case_when(migratory_guild == "Winter resident" ~ "Winter residents", TRUE ~ migratory_guild)) |>
   inner_join(clim, by = c("location" = "site", "year" = "year")) |>
@@ -2325,7 +2342,7 @@ This is an important next step given the breadth of climate-driven change alread
 #| fig-width: 12
 #| fig-height: 10
 
-species_list2 <- plot_dat |> select(species_code) |> distinct() |> arrange(species_code) |> pull()
+species_list2 <- plot_dat_new |> select(species_code) |> distinct() |> arrange(species_code) |> pull()
 
 cat("::: {.panel-tabset}\n")
 
