@@ -1835,7 +1835,7 @@ janp_alpine <- janp_ready |>
 #| include: true
 
 # missed 32-SAVS forested,51-HOLA forested,
-trendz_new <- janp_main |>
+trendz_new2 <- janp_main |>
   mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "Alpine",
                                ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested")) |>
   group_by(species_code, ecoregion) |>
@@ -1851,10 +1851,10 @@ trendz_new <- janp_main |>
   #filter(!ecoregion_total<20) |>
   dplyr::select(-c(ecoregion, ecoregion_total)) |>
   distinct() |>
-  slice(1:10) |>
+  slice(11:20) |>
   mutate(trend = map(species_code, run_trend))
 
-trendzz <- bind_rows(trendz, trendz2, trendz3, trendz4, trendz5, trendz6, trendz7, trendz8, trendz9, trendz10, trendz11, trendz12, trendz13, trendz14, trendz15, trendz16)
+trendzz <- bind_rows(trendz_new, trendz_new2)
 
 coefz_new <- trendz_new |>
   mutate(model_alpine = map(trend, ~ .x[[4]])) %>%
