@@ -1856,7 +1856,7 @@ trendz_new2 <- janp_main |>
 
 trendzz <- bind_rows(trendz_new, trendz_new2)
 
-coefz_new <- trendz_new |>
+coefz_new <- trendzz |>
   mutate(model_alpine = map(trend, ~ .x[[4]])) %>%
   mutate(model_montane = map(trend, ~ .x[[5]])) %>%
   dplyr::select(species_code, model_alpine, model_montane)
@@ -1880,7 +1880,7 @@ coefz_long_new <- coefz_new %>%
   drop_na(term) |>
   mutate(alpha_sig = ifelse(p.value < 0.05, "***", ""))
 
-plot_dat_new <- trendz_new |>
+plot_dat_new <- trendzz |>
   mutate(t = map_chr(trend, ~ class(.x))) |>
   filter(!(t == "logical")) |>
   mutate(trend_summary = map(trend, ~ .x[[3]])) |>
@@ -1932,7 +1932,7 @@ trend_table_new <- trendz_new %>%
 #| label: tbl-trend
 #| tbl-cap: Summary of trend of species by ecoregion. SOCB stands for 'Status of Canada's Birds' from the according 2024 report.
 
-datatable(trend_table)
+datatable(trend_table_new)
 
 ```
 
@@ -2017,11 +2017,11 @@ cat(":::\n")
 #| include: true
 #| code-fold: true
 #| label: fig-trend-vert
-#| fig-cap: Percent change in occupancy trend per species and ecoregion across the full study period. Colours indicate whether the trend represents an increase (>+2.5%), stable (−2.5% to +2.5%), or decrease (<−2.5%) relative to baseline.
+#| fig-cap: Percent change in average abundance trend per species and ecoregion across the full study period. Colours indicate whether the trend represents an increase (>+2.5%), stable (−2.5% to +2.5%), or decrease (<−2.5%) relative to baseline.
 #| fig-width: 8
 #| fig-height: 12
 
-ggplot(trend_table |>
+ggplot(trend_table_new |>
   filter(!is.na(trend_jasper)) |>
   mutate(trend_ecoregion = case_when(trend_ecoregion == "Montane" ~ "Forested", TRUE ~ trend_ecoregion)), aes(x = reorder_within(species_common_name, trend_pct_change, trend_ecoregion), y = trend_pct_change, fill = trend_jasper)) +
   scale_fill_viridis_d(option = "cividis") +
@@ -2049,7 +2049,7 @@ Trends grouped by guild can be found at @fig-trend-guilds-mig, @fig-trend-guilds
 #| message: false
 #| include: false
 
-trend_guild <- trend_table |>
+trend_guild <- trend_table_new |>
   inner_join(guilds, by = "species_code") |>
   mutate(migratory_guild = case_when(migratory_guild == "Winter resident" ~ "Winter residents", TRUE ~ migratory_guild)) |>
   drop_na(trend_ecoregion)
