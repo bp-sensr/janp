@@ -641,7 +641,11 @@ ggplot(janp_richness, aes(x = sky, y = richness)) +
 
 ## Vegetation variables
 
-We used the existing Vegetation Resource Inventory (VRI, @GovernmentOfAlberta2022) derived from 2020 orthophoto imagery, before the 2022 Chetamon and 2024 Jasper Wildfire to describe habitat conditions. We extracted variables describing dominant land cover classes into groups which included conifer forest, broadleaf forest, mixedwood forest, shrub cover (low and tall subgroups), herbaceous (graminoid, mixed and forb subgroups), water (lake, river/stream), human (urban and road surface), and exposed soil classes (talus, exposed soil, bedrock), forest structure (mean canopy height, mean canopy cover), and understory characteristics (shrub height, mean shrub crown closure) at 150 meter radius around each location (@tbl-hab-var). To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects **mark** as simply "Burned" for the 2025 and 2026 data **mark** . This classification replaced the pre-fire VRI categories (e.g., conifer, shrub) in the analysis. Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall.
+[NEW VEGETATION VARIABLES]
+
+@tbl-hab-var
+
+To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects **mark** as simply "Burned" for the 2025 and 2026 data **mark** . Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall (see also @)
 
 ```{r Habitat variables}
 #| warning: false
@@ -927,7 +931,7 @@ The 2024 Jasper Wildfire severely burned two established acoustic transects (VAL
 To assess whether the new transects were appropriate references for montane transects, we evaluated how similar their species assemblages were to those observed at existing montane transects over the past four years (2023-2026), excluding the TEKARRA and VALLEY5 transects post-fire because these were expected to diverge substantially due to fire severity. Specifically, we compared species detections from the COTTONWOOD and MUSHROOM transects to the distribution of detections across all other montane points to quantify compositional similarity and departure from the montane baseline. Representativeness of control transects was assessed using a multivariate dispersion analysis (PERMDISP) based on Bray–Curtis dissimilarity, with distances of new transects to the montane centroid compared against the distribution of distances among established montane transects. Statistical significance of differences in dispersion was evaluated using a permutation test with 999 iterations.
 
 ::: figure-grid
-![Tekarra 9 2023](assets/tekarra9-2024.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"}
+![Tekarra 9 2023](assets/tekarra9-2023.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"} ![Tekarra 9 2026](assets/tekarra9-2026.png){width="48%"}
 
 Tekarra 9 site photos views from 2023 (A) pre-fire, and 2025 (B) post-fire.
 :::
@@ -1138,17 +1142,17 @@ Abundance was estimated using single-visit *N*-mixture abundance models implemen
 
 #### Alpine model structure
 
-For alpine model selection, we constructed a candidate model set incorporating observation and detection covariates performed model selection ranked via BIC, which applies a stronger penalty for model complexity than AIC and is appropriate for large candidate model sets (). We also determined distribution and zero-inflation of each set of variables for the species and assigned the appropriate type to the species in the alpine ecoregion, noting zero-inflated distribution for most species. We examined the use of scaled variables for year (to detect temporal abundance trends), elevation, and previously mentioned habitat and landcover variables. Mean tree height and mean shrub height were used as structural vegetation covariates and were included as potential predictors of both abundance and detectability. Julian date, hour, detection time, data type were also included as detection covariates. Prior to model fitting, correlations between cover and height variables were assessed to evaluate collinearity. Conifer cover and mean tree height were moderately correlated (*r* = 0.38), while shrub cover and mean shrub height were essentially uncorrelated (*r* = 0.07), indicating that cover and height capture independent dimensions of habitat structure. For example, an alpine site may have high shrub cover composed of low-growing dense vegetation, or sparse but structurally tall shrubs, attributes that may be ecologically distinct and potentially relevant to different species. Model selection via BIC identified mean tree height as the primary variable influencing detection probability, with taller vegetation reducing detectability, while abundance was best explained by a combination of vegetation cover types and temporal trend. Variation inflation factors were simultaneously calculated for all landcover covariates included in the abundance submodel to assess collinearity.
+For alpine model selection, we constructed a candidate model set incorporating observation and detection covariates performed model selection ranked via BIC, which applies a stronger penalty for model complexity than AIC and is appropriate for large candidate model sets [CITATION]. We also determined distribution and zero-inflation of each model for each species and assigning the appropriate type prior to model runs. We scaled all continuous variables including year in order to detect temporal abundance trends. Julian date, hour, detection time, data type (method of data processing) were also included as detection covariates.
 
--   **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Shrub) + β₃(Conifer) + β₄(mean_tree_height) + β₅(mean_shrub_height)
--   **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(mean_tree_height) + α₃(wind) + α₄(data_type) + α₅(detection_time)
+-   **Abundance submodel 
+-   **Detection submodel 
 
 #### Forested model structure
 
-In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, broadleaf cover, mixedwood cover, water cover, human (urban and road surface), herbaceous cover (graminoid, mixed and forbs), and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2026 was added to models but created complexity in the models by variance inflation factor testing.
+In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, wetlands, herbaceous cover, and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2026 was added to models but created complexity in the models by variance inflation factor testing.
 
--   **Abundance submodel (log link):** log(λ) = β₀ + β₁(year_c) + β₂(Conifer) + β₃(Broadleaf) + β₄(Mixedwood) + β₅(mean_tree_height) + β₆(mean_shrub_height)
--   **Detection submodel (logit link):** logit(p) = α₀ + α₁(temperature) + α₂(wind) + α₃(julian) + α₄(hour) + α₅(detection_time) + α₆(data_type) + α₇(mean_tree_height) + α₈(canopy_cover)
+-   **Abundance submodel 
+-   **Detection submodel 
 
 #### Percent change evaluation
 
@@ -1317,7 +1321,7 @@ ggplot(obs_cor, aes(x = observer_a, y = observer_b, fill = r)) +
 
 ## Ecoregion community composition analysis
 
-@fig-community shows the relationship between species and ecoregion. The PERMANOVA test was performed using Bray-Curtis dissimilarity to assess whether community composition significantly differed between ecoregion groups. The analysis revealed a significant difference in bird community composition between alpine and forest groups. The ecoregion grouping explained approximately 27.85% of the variation in community composition, while residual variation accounted for 72.15%. These findings indicate a substantial divergence in species composition between ecoregion groups, justifying the decision to analyse trends separately for these two groups.
+@fig-community shows the relationship between species and ecoregion. The PERMANOVA test was performed using Bray-Curtis dissimilarity to assess whether community composition significantly differed between ecoregion groups. The analysis revealed a significant difference in bird community composition between alpine and forest groups (*F*(1,128) = `r round(permanova_result$F[[1]],2)`, *R*² = `r round(permanova_result$R2[[1]],2)`, *p* = `r round(permanova_result$`Pr(>F)`[[1]],2)` indicating a substantial divergence in species composition between ecoregion groups, justifying the decision to analyse trends separately for these two groups.
 
 ```{r Run community differences between alpine and forested ecoregions}
 #| warning: false

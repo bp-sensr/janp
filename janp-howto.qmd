@@ -12,45 +12,44 @@ This guide will help you:
 - Push and pull code changes.
 - Render and manage a Quarto document.
 
----
+------------------------------------------------------------------------
 
 ## Step 1: Clone Your GitHub Repository in RStudio
 
-1. Open RStudio and go to **File > New Project**.
-2. Select **Version Control > Git**.
-3. In the "Repository URL" field, paste your repository link:  
-   `https://github.com/biodiversitypathways/janp`.
-4. Choose a directory on your computer to store the project.
-5. Click **Create Project**.
+1.  Open RStudio and go to **File \> New Project**.
+2.  Select **Version Control \> Git**.
+3.  In the "Repository URL" field, paste your repository link:\
+    `https://github.com/biodiversitypathways/janp`.
+4.  Choose a directory on your computer to store the project.
+5.  Click **Create Project**.
 
----
+------------------------------------------------------------------------
 
 ## Step 2: Verify Git Setup in RStudio
 
-1. Check if Git is enabled:
-   - Go to **Tools > Global Options > Git/SVN**.
-   - Ensure **Enable version control interface for RStudio projects** is checked.
-2. Verify Git credentials:
-   - Run the following in the RStudio terminal:
-     ```bash
-     git config --global user.name "Your Name"
-     git config --global user.email "your.email@example.com"
-     ```
+1.  Check if Git is enabled:
+    - Go to **Tools \> Global Options \> Git/SVN**.
+    - Ensure **Enable version control interface for RStudio projects** is checked.
+2.  Verify Git credentials:
+    - Run the following in the RStudio terminal:
 
----
+      ``` bash
+      git config --global user.name "Your Name"
+      git config --global user.email "your.email@example.com"
+      ```
+
+------------------------------------------------------------------------
 
 ## Step 3: Pull Code from GitHub
 
-1. In RStudio, use the **Git** tab to view the repository.
-2. Click **Pull** to sync your local copy with the latest changes on GitHub.
+1.  In RStudio, use the **Git** tab to view the repository.
+2.  Click **Pull** to sync your local copy with the latest changes on GitHub.
 
----
+------------------------------------------------------------------------
 
 ## Step 4: Make Changes Locally
 
-1. Edit your Quarto document or other files.
-2. Save the changes.
+1.  Edit your Quarto document or other files.
+2.  Save the changes.
 
-Example: Edit the title in your Quarto YAML header:
-```yaml
-title: "Updated Report on Bird Trends in Jasper"
+Example: Edit the title in your Quarto YAML header: \`\`\`yaml title: "Updated Report on Bird Trends in Jasper"
