@@ -1185,7 +1185,7 @@ Multivariate dispersion was similar between the new reference transects (COTTONW
 comm_matrix1 <- janp_main |>
   mutate(ecoregion = case_when(ecoregion %in% c("Alpine") ~ "Alpine",
                                ecoregion %in% c("Upper Subalpine", "Lower Subalpine", "Montane") ~ "Forested")) |>
-  filter(!(grepl("VALLEY5|TEKARRA",location) & year > 2024), year %in% c(2023:2026)) |>
+  filter(!(grepl("VALLEY5|TEKARRA",location) & year > 2024), year %in% c(2025:2026)) |>
   wt_tidy_species(remove = c("mammal","amphibian","abiotic","insect","unknown"), zerofill = T) |>
   group_by(location, ecoregion, species_code) |>
   summarise(individual_order = max(individual_order)) |>
@@ -1199,11 +1199,7 @@ sp_mat <- montane_all |> dplyr::select(-location, -ecoregion)
 sp_mat <- as.data.frame(sp_mat)
 rownames(sp_mat) <- montane_all$location
 bc_dist <- vegdist(sp_mat, method = "bray")
-group <- ifelse(
-  grepl("^COTTONWOOD|^MUSHROOM", rownames(sp_mat)),
-  "Control Transects",
-  "Montane Reference"
-)
+group <- ifelse(grepl("^COTTONWOOD|^MUSHROOM", rownames(sp_mat)), "Control Transects", "Montane Reference")
 bd <- betadisper(bc_dist, group)
 permu_bd <- permutest(bd)
 dist_df <- data.frame(
