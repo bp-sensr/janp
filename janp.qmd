@@ -933,7 +933,7 @@ To assess whether the new transects were appropriate references for montane tran
 ::: figure-grid
 ![Tekarra 9 2023](assets/tekarra9-2023.png){width="48%"} ![Tekarra 9 2025](assets/tekarra9-2025.png){width="48%"} ![Tekarra 9 2026](assets/tekarra9-2026.png){width="48%"}
 
-Tekarra 9 site photos views from 2023 (A) pre-fire, and 2025 (B) post-fire.
+Tekarra 9 site photos views from 2023 (A) pre-fire, 2025 (B) post-fire and 2026 (C) two years post-fire.
 :::
 
 ### Transcription observer comparisons
@@ -1317,7 +1317,7 @@ ggplot(obs_cor, aes(x = observer_a, y = observer_b, fill = r)) +
 
 ## Ecoregion community composition analysis
 
-@fig-community shows the relationship between species and ecoregion. The PERMANOVA test was performed using Bray-Curtis dissimilarity to assess whether community composition significantly differed between ecoregion groups. The analysis revealed a significant difference in bird community composition between alpine and forest groups (*F*(1,128) = `r round(permanova_result$F[[1]],2)`, *R*² = `r round(permanova_result$R2[[1]],2)`, *p* = `r round(permanova_result$`Pr(>F)`[[1]],2)` indicating a substantial divergence in species composition between ecoregion groups, justifying the decision to analyse trends separately for these two groups.
+@fig-community shows the relationship between species and ecoregion. The PERMANOVA test was performed using Bray-Curtis dissimilarity to assess whether community composition significantly differed between ecoregion groups. The analysis revealed a significant difference in bird community composition between alpine and forest groups (*F*(1,128) = `r round(permanova_result$F[[1]],2)`, *R*² = `r round(permanova_result$R2[[1]],2)`, *p* = 0.001 indicating a substantial divergence in species composition between ecoregion groups, justifying the decision to analyse trends separately for these two groups.
 
 ```{r Run community differences between alpine and forested ecoregions}
 #| warning: false
@@ -1451,10 +1451,11 @@ spp_rich_location |>
   geom_boxplot() +
   geom_point(alpha = 0.7, colour = "grey") +
   theme_bw() +
+  theme(legend.position = "none") +
   facet_wrap(~ecoregion, ncol = 1) +
   scale_fill_viridis_c(option = "cividis") +
   xlab('Year') + ylab('Species richness per location') +
-  guides(fill = guide_legend(title = "Year"))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -1470,15 +1471,17 @@ spp_rich_location |>
 #| cap-location: bottom
 
 shannon_d |>
+  mutate(ecoregion = case_when(is.na(ecoregion) ~ "Forested", TRUE ~ ecoregion)) |>
   ggplot(aes(x = factor(year), y = shannon_index, fill = factor(year))) +
   geom_boxplot() +
   geom_point(alpha = 0.6, colour = "grey") +
   labs(x = "Year",
        y = "Shannon diversity index per location") +
   theme_bw() +
-  guides(fill = guide_legend(title = "Year")) +
+  theme(legend.position = "none") +
   scale_fill_viridis_d(alpha = 0.8, option = "cividis") +
-  facet_wrap(~ecoregion, ncol = 1)
+  facet_wrap(~ecoregion, ncol = 1) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ## Jasper 2024 fire effects
@@ -1907,7 +1910,7 @@ socb <- read_csv("species-status.csv") |>
   drop_na() |>
   slice(-1)
 
-trend_table_new <- trendz_new %>%
+trend_table_new <- trendzz %>%
   mutate(trend = map(trend, ~ if(!is.list(.x)) {list(NA)} else {.x})) |>
   mutate(trend = map(trend, 1)) %>%
   unnest_wider(trend, names_sep = "_") %>%
@@ -1945,37 +1948,41 @@ datatable(trend_table_new)
 
 plot_trend_coef <- function(species) {
   
-  p1 <- ggplot(plot_dat_new |> filter(species_code == species), aes(x = year, y = lambda_hat, color = ecoregion)) + 
-          geom_smooth() +
-          geom_point(alpha = 0.1) +
-          facet_wrap(~species_code, scales = "free_y") +
+  p1 <- ggplot(plot_dat_new |> filter(species_code == species) |>
+                 group_by(ecoregion, year) |>
+                 summarise(mean_lambda = mean(lambda_hat, na.rm = TRUE),
+                           se_lambda = sd(lambda_hat, na.rm = TRUE) / sqrt(n())) |>
+                 ungroup(), aes(x = year, y = mean_lambda, color = ecoregion)) +
+          geom_line() +
+          geom_errorbar(aes(ymin = mean_lambda - se_lambda, ymax = mean_lambda + se_lambda), width = 0.3) +
           theme_bw() + 
           scale_colour_viridis_d(option = "cividis") + 
           ylab(expression("Detection-corrected abundance ("*hat(lambda)*")")) + 
           xlab("Year")
 
   p2 <- coefz_long_new |> 
-  filter(species_code == species) |>
-  mutate(significant = ifelse(alpha_sig == "*", ecoregion, NA_character_)) |>
-  ggplot(aes(x = term, y = estimate, colour = ecoregion)) +
-  scale_colour_viridis_d(option = "cividis") +
-  scale_fill_manual(values = c(Alpine = "#00204D", Forested = "#FFEA46"), na.value = "white") +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
-                position = position_dodge(width = 0.8), width = 0.2) +
-  geom_point(aes(fill = significant),
-             position = position_dodge(width = 0.8),
-             shape = 21, size = 2.5, stroke = 0.8) +
-  coord_flip() +
-  facet_wrap(~component, scales = "free_x") +
-  labs(x = NULL, y = "Coefficient (β)",
-       title = "Distribution of coefficients across species by ecoregion") +
-  theme_bw() +
-  theme(
-    legend.position = "none",
-    axis.text.y     = element_text(size = 8),
-    strip.text      = element_text(size = 8),
-    plot.title      = element_text(size = 12, face = "bold")
+    filter(species_code == species) |>
+    mutate(significant = ifelse(alpha_sig == "*", ecoregion, NA_character_)) |>
+    ggplot(aes(x = term, y = estimate, colour = ecoregion)) +
+    scale_colour_manual(values = c(Alpine = "#00204D", Forested = "#C9A400")) +
+    scale_fill_manual(values = c(Alpine = "#00204D", Forested = "#C9A400"), na.value = "white") +
+    scale_alpha_manual(values = c("***" = 1), na.value = 0.5) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_errorbar(aes(ymin = conf.low, ymax = conf.high, alpha = alpha_sig),
+                  position = position_dodge(width = 0.8), width = 0.2) +
+    geom_point(aes(fill = significant, alpha = alpha_sig),
+               position = position_dodge(width = 0.8),
+               shape = 21, size = 2.5, stroke = 0.8) +
+    coord_flip() +
+    facet_wrap(~component, scales = "free_x") +
+    labs(x = NULL, y = "Coefficient (β)",
+         title = "Distribution of coefficients across species by ecoregion") +
+    theme_bw() +
+    theme(
+      legend.position = "none",
+      axis.text.y     = element_text(size = 8),
+      strip.text      = element_text(size = 8),
+      plot.title      = element_text(size = 12, face = "bold")
   )
 
 return(p1 / p2)
@@ -1996,7 +2003,7 @@ return(p1 / p2)
 #| fig-width: 12
 #| fig-height: 10
 
-species_list <- plot_dat_new |> select(species_code) |> distinct() |> pull() 
+species_list <- plot_dat_new |> select(species_code) |> distinct() |> slice (1:5) |> pull() 
 
 cat("::: {.panel-tabset}\n")
 
