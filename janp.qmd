@@ -230,12 +230,12 @@ pct_dec_val <- function(data, group_var, guild_val, ecoregion) {
 
 # Project Highlights
 
--   Acoustic recordings from `r paste0(min(janp_main$year),"–",max(janp_main$year))` in Jasper National Park were analyzed to assess bird abundance trends relative to a ±2.5% annual change threshold as part of the Park's ecological integrity monitoring program.
--   A single-visit N-mixture abundance model was applied to `r coefz_long |> filter(ecoregion == "Alpine") |> distinct(species_code) |> nrow()` alpine and `r coefz_long |> filter(ecoregion == "Forested") |> distinct(species_code) |> nrow()` forested species, accounting for detection and observation covariates in each ecoregion.
--   Using the aforementioned threshold, long-distance migrants showed the strongest declines (`r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Forested")`% forested), followed by winter residents (`r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Forested")`% forested), while short-distance migrants were comparatively stable (`r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Forested")`% forested).
--   Declines were most pronounced among invertebrate feeders (`r pct_dec_val(trend_guild, trait, "Invertebrate", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Invertebrate", "Forested")`% forested) and plant/seed feeders (`r pct_dec_val(trend_guild, trait, "PlantSeed", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "PlantSeed", "Forested")`% forested), whereas omnivores were least affected (`r pct_dec_val(trend_guild, trait, "Omnivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Omnivore", "Forested")`% forested).
--   By habitat guild, grassland-shrubland-alpine species showed the steepest declines (`r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Forested")`% forested), followed by habitat generalists (`r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Forested")`% forested) and forest generalists (`r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Forested")`% forested); late succession forest (`r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Forested")`% forested) and wetland species (`r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Forested")`% forested) showed comparatively fewer declines.
--   At finer dietary resolution, aerial insectivores exhibited the steepest declines (`r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Forested")`% forested), with additional losses among granivore-herbivores (`r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Forested")`% forested) and aquatic foragers (`r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Forested")`% forested).
+- Acoustic recordings from `r paste0(min(janp_main$year),"–",max(janp_main$year))` in Jasper National Park were analyzed to assess bird abundance trends relative to a ±2.5% annual change threshold as part of the Park's ecological integrity monitoring program.
+- A single-visit N-mixture abundance model was applied to `r coefz_long |> filter(ecoregion == "Alpine") |> distinct(species_code) |> nrow()` alpine and `r coefz_long |> filter(ecoregion == "Forested") |> distinct(species_code) |> nrow()` forested species, accounting for detection and observation covariates in each ecoregion.
+- Using the aforementioned threshold, long-distance migrants showed the strongest declines (`r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Long-distance migrants", "Forested")`% forested), followed by winter residents (`r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Winter residents", "Forested")`% forested), while short-distance migrants were comparatively stable (`r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Alpine")`% alpine, `r pct_dec_val(trend_guild, migratory_guild, "Short-distance migrants", "Forested")`% forested).
+- Declines were most pronounced among invertebrate feeders (`r pct_dec_val(trend_guild, trait, "Invertebrate", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Invertebrate", "Forested")`% forested) and plant/seed feeders (`r pct_dec_val(trend_guild, trait, "PlantSeed", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "PlantSeed", "Forested")`% forested), whereas omnivores were least affected (`r pct_dec_val(trend_guild, trait, "Omnivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, trait, "Omnivore", "Forested")`% forested).
+- By habitat guild, grassland-shrubland-alpine species showed the steepest declines (`r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Grassland-shrubland-alpine", "Forested")`% forested), followed by habitat generalists (`r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Habitat Generalist", "Forested")`% forested) and forest generalists (`r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Forest Generalist", "Forested")`% forested); late succession forest (`r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Late succession forest", "Forested")`% forested) and wetland species (`r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Alpine")`% alpine, `r pct_dec_val(trend_guild, habitat_guild, "Wetland", "Forested")`% forested) showed comparatively fewer declines.
+- At finer dietary resolution, aerial insectivores exhibited the steepest declines (`r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aerial insectivore", "Forested")`% forested), with additional losses among granivore-herbivores (`r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Granivore-herbivore", "Forested")`% forested) and aquatic foragers (`r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Alpine")`% alpine, `r pct_dec_val(trend_guild, dietary_guild, "Aquatic", "Forested")`% forested).
 
 # Land Acknowledgement
 
@@ -253,17 +253,17 @@ This report analyzes Jasper's passive acoustic bird monitoring data from 2007 to
 
 The objectives of this report are to:
 
--   Describe the data management and processing procedures for acoustic data collected from 2007 to 2026.
--   Compare how different data processing methods influence the count of species and individuals detected on recordings.
--   Report on trends in bird abundance by species and by guild in the forest and alpine ecoregions, incorporating time-to-first-detection analysis.
-    -   Summarize results by ecoregion as the percentage of species and guilds declining by ≥2.5% in both forest and alpine regions.
-    -   Explore methods (e.g., inclusion of covariates and summarizing by guild) to interpret these changes, understanding how birds may be responding to stressors in the park or across their ranges and how changing populations may affect ecosystems.
-    -   Estimate species richness and diversity trends to determine if they provide insight about bird community conditions.
--   Provide recommendations for:
-    -   Prioritizing previous years’ data for re-transcription to 1SPT;
-    -   Optimizing annual reporting methods (e.g., baseline comparisons vs. 10-year trends); and
-    -   Refining methods for evaluating species trends against thresholds and reviewing guilds and traits used in assessments.
-    -   Facilitate data publication to the public, resource managers, academic institutions, and any other relevant agencies.
+- Describe the data management and processing procedures for acoustic data collected from 2007 to 2026.
+- Compare how different data processing methods influence the count of species and individuals detected on recordings.
+- Report on trends in bird abundance by species and by guild in the forest and alpine ecoregions, incorporating time-to-first-detection analysis.
+  - Summarize results by ecoregion as the percentage of species and guilds declining by ≥2.5% in both forest and alpine regions.
+  - Explore methods (e.g., inclusion of covariates and summarizing by guild) to interpret these changes, understanding how birds may be responding to stressors in the park or across their ranges and how changing populations may affect ecosystems.
+  - Estimate species richness and diversity trends to determine if they provide insight about bird community conditions.
+- Provide recommendations for:
+  - Prioritizing previous years’ data for re-transcription to 1SPT;
+  - Optimizing annual reporting methods (e.g., baseline comparisons vs. 10-year trends); and
+  - Refining methods for evaluating species trends against thresholds and reviewing guilds and traits used in assessments.
+  - Facilitate data publication to the public, resource managers, academic institutions, and any other relevant agencies.
 
 # Methods
 
@@ -649,11 +649,11 @@ ggplot(janp_richness, aes(x = sky, y = richness)) +
 
 ## Vegetation variables
 
-[NEW VEGETATION VARIABLES]
+\[NEW VEGETATION VARIABLES\]
 
 @tbl-hab-var
 
-To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects **mark** as simply "Burned" for the 2025 and 2026 data **mark** . Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall (see also @)
+To account for the severe habitat alteration caused by the 2024 Jasper Wildfire, we manually reclassified the land cover variable for all sites on the TEKARRA and VALLEY5 transects **mark** as simply "Burned" for the 2025 and 2026 data **mark** . Assessment of the burn severity classification was not used in this analysis, but field visits and current knowledge would classify the burn as high to severe overall (see also \@)
 
 ```{r Habitat variables}
 #| warning: false
@@ -1136,7 +1136,7 @@ spp_rich_location <- janp_main |>
 
 ### Jasper 2024 fire effects {#sec-jasper-fire}
 
-We characterized the shift in bird community composition on the VALLEY5 and TEKARRA transects post-fire using redundancy analysis (RDA) using the `vegan::rda` function. We constructed a species-by-site community matrix using maximum abundance counts, restricting the pre-fire baseline to data from the montane ecoregion collected over the three years prior to the wildfire (2022–2024). We then modeled community structure as a function of years since fire with years < 2024 being 0. This constrained ordination allows us to quantify the variation in species assemblages explicitly explained by the fire event and visualize the directional responses of individual species across years.
+We characterized the shift in bird community composition on the VALLEY5 and TEKARRA transects post-fire using redundancy analysis (RDA) using the `vegan::rda` function. We constructed a species-by-site community matrix using maximum abundance counts, restricting the pre-fire baseline to data from the montane ecoregion collected over the three years prior to the wildfire (2022–2024). We then modeled community structure as a function of years since fire with years \< 2024 being 0. This constrained ordination allows us to quantify the variation in species assemblages explicitly explained by the fire event and visualize the directional responses of individual species across years.
 
 ### Trend analysis
 
@@ -1150,17 +1150,17 @@ Abundance was estimated using single-visit *N*-mixture abundance models implemen
 
 #### Alpine model structure
 
-For alpine model selection, we constructed a candidate model set incorporating observation and detection covariates performed model selection ranked via BIC, which applies a stronger penalty for model complexity than AIC and is appropriate for large candidate model sets [CITATION]. We also determined distribution and zero-inflation of each model for each species and assigning the appropriate type prior to model runs. We scaled all continuous variables including year in order to detect temporal abundance trends. Julian date, hour, detection time, data type (method of data processing) were also included as detection covariates.
+For alpine model selection, we constructed a candidate model set incorporating observation and detection covariates performed model selection ranked via BIC, which applies a stronger penalty for model complexity than AIC and is appropriate for large candidate model sets \[CITATION\]. We also determined distribution and zero-inflation of each model for each species and assigning the appropriate type prior to model runs. We scaled all continuous variables including year in order to detect temporal abundance trends. Julian date, hour, detection time, data type (method of data processing) were also included as detection covariates.
 
--   **Abundance submodel 
--   **Detection submodel 
+- \*\*Abundance submodel
+- \*\*Detection submodel
 
 #### Forested model structure
 
 In the forest model selection, the candidate model set was again ranked via BIC but included the following ecoregion-specific variables: scaled variables for year, shrub cover, conifer cover, wetlands, herbaceous cover, and rock and soil (bedrock, exposed soil). The burned class exclusive to TEKARRA and VALLEY5 locations in 2026 was added to models but created complexity in the models by variance inflation factor testing.
 
--   **Abundance submodel 
--   **Detection submodel 
+- \*\*Abundance submodel
+- \*\*Detection submodel
 
 #### Percent change evaluation
 
